@@ -13,15 +13,24 @@ const App = () => {
   ];
 
   const [selected, setSelected] = useState(0);
+  const [votes, setVotes] = useState(Array(anecdotes.length).fill(0));
 
-  const handleOnClick = () => {
+  const handleOnClickNext = () => {
     setSelected(Math.floor(Math.random() * (anecdotes.length - 1)));
+  };
+
+  const handleOnClickVote = () => {
+    const newVotes = [...votes];
+    newVotes[selected] += 1;
+    setVotes(newVotes);
   };
 
   return (
     <div>
-      <button onClick={handleOnClick}>Generate random anectode</button>
       <p>{anecdotes[selected]}</p>
+      <p>This anectode has: {votes[selected]} votes</p>
+      <button onClick={handleOnClickVote}>Vote!</button>
+      <button onClick={handleOnClickNext}>Generate random anectode</button>
     </div>
   );
 };
