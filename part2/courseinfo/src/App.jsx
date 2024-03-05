@@ -8,6 +8,7 @@ const Content = ({ course }) => {
       <Part parts={course.parts[0]} />
       <Part parts={course.parts[1]} />
       <Part parts={course.parts[2]} />
+      <Part parts={course.parts[3]} />
     </>
   );
 };
@@ -19,11 +20,21 @@ const Part = ({ parts }) => {
   );
 };
 
+const Total = ({ course }) => {
+  return (
+    <p>
+      Total exercises: {course.parts.reduce((accumulator, part) => accumulator + part.exercises, 0)}
+      .
+    </p>
+  );
+};
+
 const Course = ({ course }) => {
   return (
     <>
       <Header course={course} />
       <Content course={course} />
+      <Total course={course} />
     </>
   );
 };
@@ -43,6 +54,10 @@ const App = () => {
       {
         name: 'State of a component',
         exercises: 14,
+      },
+      {
+        name: 'Redux',
+        exercises: 11,
       },
     ],
   };
