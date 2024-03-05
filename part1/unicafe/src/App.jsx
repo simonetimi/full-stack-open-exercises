@@ -11,6 +11,20 @@ const CountButton = ({ value, setValue, label }) => {
   );
 };
 
+const Statistics = ({ all, good, neutral, bad }) => {
+  return (
+    <>
+      <h1>statistics</h1>
+      <p>good {good}</p>
+      <p>neutral {neutral}</p>
+      <p>bad {bad}</p>
+      <p>all {all}</p>
+      <p>average {all === 0 ? 0 : (good - bad) / all}</p>
+      <p>positive {all === 0 ? 0 : (good / all) * 100}%</p>
+    </>
+  );
+};
+
 const App = () => {
   const [good, setGood] = useState(0);
   const [neutral, setNeutral] = useState(0);
@@ -25,13 +39,7 @@ const App = () => {
       <CountButton value={good} setValue={setGood} label={labels[0]} />
       <CountButton value={neutral} setValue={setNeutral} label={labels[1]} />
       <CountButton value={bad} setValue={setBad} label={labels[2]} />
-      <h1>statistics</h1>
-      <p>good {good}</p>
-      <p>neutral {neutral}</p>
-      <p>bad {bad}</p>
-      <p>all {all}</p>
-      <p>average {all === 0 ? 0 : (good - bad) / all}</p>
-      <p>positive {all === 0 ? 0 : (good / all) * 100}%</p>
+      <Statistics all={all} good={good} neutral={neutral} bad={bad} />
     </div>
   );
 };
