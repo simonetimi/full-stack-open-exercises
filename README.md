@@ -1,3 +1,3 @@
 # Full Stack Open exercises
 
-## Simone Timi
+Student: Simone Timi
