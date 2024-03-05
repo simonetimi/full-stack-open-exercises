@@ -2,4 +2,5 @@
 
 ### Exercises
 
-- courseinfo: 1.1 - 1.2
+- courseinfo: 1.1 - 1.5
+- unicafe: 1.6 - 1.14
