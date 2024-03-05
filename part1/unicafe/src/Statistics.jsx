@@ -1,8 +1,9 @@
 const StatisticLine = ({ label, value }) => {
   return (
-    <p>
-      {label} {value}
-    </p>
+    <>
+      <td>{label}</td>
+      <td>{value}</td>
+    </>
   );
 };
 
@@ -15,14 +16,28 @@ export const Statistics = ({ all, good, neutral, bad }) => {
       {all === 0 ? (
         <p>No feedback given</p>
       ) : (
-        <>
-          <StatisticLine label="good" value={good} />
-          <StatisticLine label="neutral" value={neutral} />
-          <StatisticLine label="bad" value={bad} />
-          <StatisticLine label="all" value={all} />
-          <StatisticLine label="average" value={average} />
-          <StatisticLine label="positive" value={positive} />
-        </>
+        <table>
+          <tbody>
+            <tr>
+              <StatisticLine label="good" value={good} />
+            </tr>
+            <tr>
+              <StatisticLine label="neutral" value={neutral} />
+            </tr>
+            <tr>
+              <StatisticLine label="bad" value={bad} />
+            </tr>
+            <tr>
+              <StatisticLine label="all" value={all} />
+            </tr>
+            <tr>
+              <StatisticLine label="average" value={average} />
+            </tr>
+            <tr>
+              <StatisticLine label="positive" value={positive} />
+            </tr>
+          </tbody>
+        </table>
       )}
     </>
   );
