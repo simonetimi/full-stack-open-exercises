@@ -3,6 +3,7 @@ import { Search } from './components/Search';
 import { NewPerson } from './components/NewPerson';
 import { ShowPeople } from './components/ShowPeople';
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -27,7 +28,7 @@ const App = () => {
     setNewPhone(event.target.value);
   };
 
-  const handleOnSubmit = (event) => {
+  const handleOnSubmit = async (event) => {
     event.preventDefault();
     const nameIsPresent = persons.find((person) => person.name === newName) !== undefined;
     const phoneIsPresent = persons.find((person) => person.number === newPhone) !== undefined;
@@ -38,7 +39,10 @@ const App = () => {
       alert(`Phone number: ${newPhone} is already present.`);
       return;
     }
-    setPersons([...persons, { name: newName, number: newPhone }]);
+    const newPerson = { name: newName, number: newPhone, id: uuidv4() };
+    setPersons([...persons, { name: newName, number: newPhone, id: uuidv4() }]);
+    const response = await axios.post('http://localhost:3001/persons', newPerson);
+    console.log(response);
   };
 
   const handleOnChangeSearch = (event) => {
