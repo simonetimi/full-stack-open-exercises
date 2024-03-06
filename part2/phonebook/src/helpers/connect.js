@@ -7,7 +7,10 @@ export async function fetchAll() {
   return response.data;
 }
 
-export async function create(newPerson) {
-  const response = await axios.post('http://localhost:3001/persons', newPerson);
-  return response;
+export async function createOnDb(newPerson) {
+  return await axios.post(url, newPerson);
+}
+
+export async function removeFromDb(personId) {
+  return await axios.delete(`${url}/${personId}`);
 }

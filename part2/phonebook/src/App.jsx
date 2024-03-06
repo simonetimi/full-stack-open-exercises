@@ -3,7 +3,7 @@ import { Search } from './components/Search';
 import { NewPerson } from './components/NewPerson';
 import { ShowPeople } from './components/ShowPeople';
 import { v4 as uuidv4 } from 'uuid';
-import { fetchAll, create } from './helpers/connect';
+import { fetchAll, createOnDb } from './helpers/connect';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -39,7 +39,7 @@ const App = () => {
       return;
     }
     const newPerson = { name: newName, number: newPhone, id: uuidv4() };
-    await create(newPerson);
+    await createOnDb(newPerson);
     setPersons([...persons, newPerson]);
   };
 
@@ -63,7 +63,12 @@ const App = () => {
       />
 
       <h2>Numbers</h2>
-      <ShowPeople searchInput={searchInput} persons={persons} found={found} />
+      <ShowPeople
+        searchInput={searchInput}
+        persons={persons}
+        found={found}
+        setPersons={setPersons}
+      />
     </div>
   );
 };
