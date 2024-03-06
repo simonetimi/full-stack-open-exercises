@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { Search } from './components/Search';
 import { NewPerson } from './components/NewPerson';
 import { ShowPeople } from './components/ShowPeople';
-import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
+import { fetchAll, create } from './helpers/connect';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -13,11 +13,10 @@ const App = () => {
   const [found, setFound] = useState('');
 
   useEffect(() => {
-    async function fetchData() {
-      const response = await axios.get('http://localhost:3001/persons');
-      setPersons(response.data);
-    }
-    fetchData();
+    (async () => {
+      const data = await fetchAll();
+      setPersons(data);
+    })();
   }, []);
 
   const handleOnChangeName = (event) => {
@@ -40,9 +39,8 @@ const App = () => {
       return;
     }
     const newPerson = { name: newName, number: newPhone, id: uuidv4() };
-    setPersons([...persons, { name: newName, number: newPhone, id: uuidv4() }]);
-    const response = await axios.post('http://localhost:3001/persons', newPerson);
-    console.log(response);
+    await create(newPerson);
+    setPersons([...persons, newPerson]);
   };
 
   const handleOnChangeSearch = (event) => {
