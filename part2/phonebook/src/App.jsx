@@ -10,6 +10,10 @@ const App = () => {
 
   const handleOnSubmit = (event) => {
     event.preventDefault();
+    if (persons.find((person) => person.name === newName) !== undefined) {
+      alert(`${newName} is already present.`);
+      return;
+    }
     setPersons([...persons, { name: newName }]);
   };
 
