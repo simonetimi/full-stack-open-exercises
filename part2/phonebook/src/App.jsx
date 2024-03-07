@@ -3,7 +3,7 @@ import { Search } from './components/Search';
 import { NewPerson } from './components/NewPerson';
 import { ShowPeople } from './components/ShowPeople';
 import { v4 as uuidv4 } from 'uuid';
-import { fetchAll, createOnDb } from './helpers/connect';
+import { fetchAll, createOnDb, updateOnDb } from './helpers/connect';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -29,10 +29,17 @@ const App = () => {
 
   const handleOnSubmit = async (event) => {
     event.preventDefault();
-    const nameIsPresent = persons.find((person) => person.name === newName) !== undefined;
-    const phoneIsPresent = persons.find((person) => person.number === newPhone) !== undefined;
+    const nameIsPresent = persons.some((person) => person.name === newName);
+    const phoneIsPresent = persons.some((person) => person.number === newPhone);
     if (nameIsPresent) {
-      alert(`${newName} is already present.`);
+      const personToUpdate = persons.find((person) => person.name === newName);
+      const updatedPersonWithNewNumber = { ...personToUpdate, number: newPhone };
+      await updateOnDb(updatedPersonWithNewNumber, updatedPersonWithNewNumber.id);
+      const updatedPersons = persons.map((person) =>
+        person.id === personToUpdate.id ? updatedPersonWithNewNumber : person
+      );
+      setPersons(updatedPersons);
+
       return;
     } else if (phoneIsPresent) {
       alert(`Phone number: ${newPhone} is already present.`);

@@ -2,13 +2,12 @@ import { removeFromDb } from '../helpers/connect';
 
 const DeleteButton = ({ personId, setPersons, persons }) => {
   const handleOnClick = async () => {
-    if (confirm('Do you really want to delete the entry?')) {
+    if (window.confirm('Do you really want to delete the entry?')) {
       await removeFromDb(personId);
-      const indexToRemove = persons.findIndex((item) => item.id === personId);
-      setPersons(persons.toSpliced(indexToRemove));
+      const updatedPersons = persons.filter((person) => person.id !== personId);
+      setPersons(updatedPersons);
     }
   };
-
   return <button onClick={handleOnClick}>delete</button>;
 };
 
