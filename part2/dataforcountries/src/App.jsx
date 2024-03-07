@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import getWeather from './helpers/weather';
 
 const CountryItem = ({ country }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -29,6 +30,7 @@ const App = () => {
   const [searchInput, setSearchInput] = useState('');
   const [foundCountries, setFoundCountries] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [weather, setWeather] = useState({});
 
   useEffect(() => {
     async function fetchAll() {
@@ -47,6 +49,16 @@ const App = () => {
     );
     setFoundCountries(found);
   };
+
+  useEffect(() => {
+    async function fetchWeather() {
+      if (foundCountries.length === 1) {
+        const data = await getWeather(foundCountries[0].capital);
+        setWeather(data);
+      }
+    }
+    fetchWeather();
+  }, [foundCountries]);
 
   if (isLoading) {
     return null;
@@ -72,6 +84,12 @@ const App = () => {
             <p>Capital: {country.capital[0]}</p>
             <p>Languages: {Object.values(country.languages).map((language) => language)}</p>
             <img src={country.flags.png} alt={country.flags.alt} />
+            <h2>{country.capital[0]} current weather</h2>
+            <img src={weather.weatherIcon} alt={weather.weatherDescription} />
+            <p>{weather.weatherDescription}</p>
+            <p>Temperature: {weather.temp}°C</p>
+            <p>Wind speed: {weather.windSpeed} km/h</p>
+            <p>Precipitation: {weather.precipitation}%</p>
           </div>
         ))
       ) : null}
