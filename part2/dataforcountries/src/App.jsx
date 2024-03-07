@@ -1,6 +1,29 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
+const CountryItem = ({ country }) => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  return (
+    <li>
+      {country.name.common}{' '}
+      <button onClick={() => setIsVisible(!isVisible)}>{isVisible ? 'hide' : 'show'}</button>
+      {isVisible && (
+        <div>
+          {' '}
+          <h2>
+            {country.name.common} {country.flag}
+          </h2>
+          <p>Continent: {country.continents[0]}</p>
+          <p>Capital: {country.capital[0]}</p>
+          <p>Languages: {Object.values(country.languages).map((language) => language)}</p>
+          <img src={country.flags.png} alt={country.flags.alt} />
+        </div>
+      )}
+    </li>
+  );
+};
+
 const App = () => {
   const [countries, setCountries] = useState([]);
   const [searchInput, setSearchInput] = useState('');
@@ -38,7 +61,7 @@ const App = () => {
       {foundCountries.length > 10 ? (
         <p>Too many countries found, please restrict your search</p>
       ) : foundCountries.length > 1 ? (
-        foundCountries.map((country) => <li key={country.name.common}>{country.name.common}</li>)
+        foundCountries.map((country) => <CountryItem key={country.name.common} country={country} />)
       ) : foundCountries.length === 1 ? (
         foundCountries.map((country) => (
           <div key={country.name.common}>
