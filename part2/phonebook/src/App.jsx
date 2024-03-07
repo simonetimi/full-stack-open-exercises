@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Search } from './components/Search';
 import { NewPerson } from './components/NewPerson';
 import { ShowPeople } from './components/ShowPeople';
+import { Notification } from './components/Notification';
 import { v4 as uuidv4 } from 'uuid';
 import { fetchAll, createOnDb, updateOnDb } from './helpers/connect';
 
@@ -11,6 +12,10 @@ const App = () => {
   const [newPhone, setNewPhone] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [found, setFound] = useState('');
+  const [notification, setNotification] = useState({
+    message: '',
+    type: '',
+  });
 
   useEffect(() => {
     (async () => {
@@ -32,22 +37,38 @@ const App = () => {
     const nameIsPresent = persons.some((person) => person.name === newName);
     const phoneIsPresent = persons.some((person) => person.number === newPhone);
     if (nameIsPresent) {
-      const personToUpdate = persons.find((person) => person.name === newName);
-      const updatedPersonWithNewNumber = { ...personToUpdate, number: newPhone };
-      await updateOnDb(updatedPersonWithNewNumber, updatedPersonWithNewNumber.id);
-      const updatedPersons = persons.map((person) =>
-        person.id === personToUpdate.id ? updatedPersonWithNewNumber : person
-      );
-      setPersons(updatedPersons);
-
-      return;
+      try {
+        const personToUpdate = persons.find((person) => person.name === newName);
+        const updatedPersonWithNewNumber = { ...personToUpdate, number: newPhone };
+        await updateOnDb(updatedPersonWithNewNumber, updatedPersonWithNewNumber.id);
+        const updatedPersons = persons.map((person) =>
+          person.id === personToUpdate.id ? updatedPersonWithNewNumber : person
+        );
+        setPersons(updatedPersons);
+        setNotification({ type: 'success', message: `Contact "${personToUpdate.name}" updated!` });
+        return;
+      } catch (error) {
+        setNotification({ type: 'error', message: 'Error updating phone number!' });
+        return;
+      }
     } else if (phoneIsPresent) {
-      alert(`Phone number: ${newPhone} is already present.`);
+      setNotification({
+        type: 'error',
+        message: `Phone number: ${newPhone} is already present.`,
+      });
       return;
     }
-    const newPerson = { name: newName, number: newPhone, id: uuidv4() };
-    await createOnDb(newPerson);
-    setPersons([...persons, newPerson]);
+    try {
+      const newPerson = { name: newName, number: newPhone, id: uuidv4() };
+      await createOnDb(newPerson);
+      setPersons([...persons, newPerson]);
+      setNotification({
+        type: 'success',
+        message: `Contact "${newPerson.name}" added!`,
+      });
+    } catch (error) {
+      setNotification({ type: 'error', message: 'Error adding contact!' });
+    }
   };
 
   const handleOnChangeSearch = (event) => {
@@ -58,6 +79,7 @@ const App = () => {
 
   return (
     <div>
+      <Notification type={notification.type} message={notification.message} />
       <h2>Phonebook</h2>
       <Search handleOnChangeSearch={handleOnChangeSearch} searchInput={searchInput} />
       <hr />
@@ -75,6 +97,7 @@ const App = () => {
         persons={persons}
         found={found}
         setPersons={setPersons}
+        setNotification={setNotification}
       />
     </div>
   );
