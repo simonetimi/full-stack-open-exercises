@@ -17,3 +17,14 @@ app.get('/api/info', (request, response) => {
   const info = `<p>Phonebook has ${numberOfPeople} contacts</p><p>${now}</p>`;
   response.send(info);
 });
+
+app.get('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id);
+  const contact = contacts.filter((contact) => contact.id === id);
+  if (contact.length < 1) {
+    return response.status(404).json({
+      error: 'Contact not found',
+    });
+  }
+  response.json(contact);
+});
