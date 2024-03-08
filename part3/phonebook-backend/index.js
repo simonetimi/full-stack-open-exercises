@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const morgan = require('morgan');
 
 const data = require('./data.js');
 let contacts = data.contacts;
@@ -10,6 +11,8 @@ const PORT = 3001;
 app.listen(PORT);
 
 app.use(express.json());
+
+app.use(morgan('tiny'));
 
 app.get('/api/persons', (request, response) => {
   response.json(data);
