@@ -4,8 +4,6 @@
 
 - phonebook-backend: 3.1-3.11
 
-### Link to standalone backend repo:
+### Link to standalone repo: [link](https://github.com/simonetimi/phonebook-sa)
 
-### Link to deployed backend:
-
-### Link to deployed fullstack app:
+### Link to deployed fullstack app: [link](https://phonebook-sa.onrender.com/)

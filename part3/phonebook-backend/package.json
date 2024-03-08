@@ -4,8 +4,11 @@
   "description": "Phonebook backend exercise for fs open",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:ui": "rm -rf dist && cd ./phonebook-fe && npm run build && cp -r dist ../",
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
   },
   "author": "Simone Timi",
   "license": "ISC",

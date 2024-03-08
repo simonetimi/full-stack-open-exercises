@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const url = 'http://localhost:3001/api/persons';
+const url = '/api/persons';
 
 export async function fetchAll() {
   const response = await axios.get(url);
