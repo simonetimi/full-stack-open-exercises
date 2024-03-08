@@ -1,3 +1,9 @@
-Deployed at: [link](https://phonebook-sa.onrender.com/)
+## Solutions for the exercises of part 3 - Full Stack Open course
 
-Exercise repo at : [link](https://github.com/simonetimi/full-stack-open-exercises)
+### Exercises
+
+- phonebook-backend: 3.1-3.22
+
+### Link to standalone repo: [link](https://github.com/simonetimi/phonebook-sa)
+
+### Link to deployed fullstack app: [link](https://phonebook-sa.onrender.com/)
