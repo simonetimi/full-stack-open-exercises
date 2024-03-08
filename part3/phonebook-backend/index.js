@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const morgan = require('morgan');
+const cors = require('cors');
 
 const data = require('./data.js');
 let contacts = data.contacts;
@@ -9,6 +10,8 @@ const { generateId } = require('./util.js');
 
 const PORT = 3001;
 app.listen(PORT);
+
+app.use(cors());
 
 app.use(express.json());
 
@@ -22,7 +25,7 @@ const logger = morgan(':method :url :status :body :res[content-length] - :respon
 app.use(logger);
 
 app.get('/api/persons', (request, response) => {
-  response.json(data);
+  response.json(contacts);
 });
 
 app.get('/api/info', (request, response) => {
