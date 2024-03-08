@@ -4,8 +4,12 @@ const app = express();
 const data = require('./data.js');
 let contacts = data.contacts;
 
+const { generateId } = require('./util.js');
+
 const PORT = 3001;
 app.listen(PORT);
+
+app.use(express.json());
 
 app.get('/api/persons', (request, response) => {
   response.json(data);
@@ -39,4 +43,27 @@ app.delete('/api/persons/:id', (request, response) => {
     });
   }
   response.status(204).end();
+});
+
+app.post('/api/persons/', (request, response) => {
+  const body = request.body;
+  console.log(body);
+  if (!body.name) {
+    return response.status(400).json({
+      error: 'Contact name is missing',
+    });
+  } else if (!body.number) {
+    return response.status(400).json({
+      error: 'Contact number is missing',
+    });
+  }
+  const contact = {
+    name: body.name,
+    number: body.number,
+    id: generateId(),
+  };
+  console.log(contact);
+  contacts = [...contacts, contact];
+  console.log(contacts);
+  response.json(contact);
 });
