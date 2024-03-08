@@ -12,7 +12,14 @@ app.listen(PORT);
 
 app.use(express.json());
 
-app.use(morgan('tiny'));
+// morgan
+morgan.token('body', (request) => {
+  if (request.method === 'POST') {
+    return JSON.stringify(request.body);
+  }
+});
+const logger = morgan(':method :url :status :body :res[content-length] - :response-time ms');
+app.use(logger);
 
 app.get('/api/persons', (request, response) => {
   response.json(data);
