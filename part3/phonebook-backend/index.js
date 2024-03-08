@@ -47,7 +47,7 @@ app.delete('/api/persons/:id', (request, response) => {
 
 app.post('/api/persons/', (request, response) => {
   const body = request.body;
-  console.log(body);
+
   if (!body.name) {
     return response.status(400).json({
       error: 'Contact name is missing',
@@ -57,13 +57,20 @@ app.post('/api/persons/', (request, response) => {
       error: 'Contact number is missing',
     });
   }
+
+  const contactIsPresent = contacts.some((contact) => body.name === contact.name);
+  if (contactIsPresent) {
+    return response.status(409).json({
+      error: 'Contact is present',
+    });
+  }
+
   const contact = {
     name: body.name,
     number: body.number,
     id: generateId(),
   };
-  console.log(contact);
   contacts = [...contacts, contact];
-  console.log(contacts);
+
   response.json(contact);
 });
