@@ -2,7 +2,7 @@
 
 ### Exercises
 
-- phonebook-backend: 3.1-3.11
+- phonebook-backend: 3.1-3.18
 
 ### Link to standalone repo: [link](https://github.com/simonetimi/phonebook-sa)
 
