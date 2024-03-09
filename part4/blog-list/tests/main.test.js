@@ -1,7 +1,7 @@
 const { test, describe } = require('node:test');
 const assert = require('node:assert');
 const listHelper = require('../utils/list-helper');
-const { listWithOneBlog, listWithMultipleBlogs } = require('../utils/dummy-data');
+const { listWithOneBlog, listWithMultipleBlogs, mostLikedBlog } = require('../utils/dummy-data');
 
 test('dummy returns 1', () => {
   const blogs = [];
@@ -17,5 +17,12 @@ describe('total likes', () => {
   test('when list has only multiple blogs, equals the sum of their likes', () => {
     const result = listHelper.totalLikes(listWithMultipleBlogs);
     assert.strictEqual(result, 36);
+  });
+});
+
+describe('most liked', () => {
+  test('should return the most liked blog', () => {
+    const result = listHelper.mostLiked(listWithMultipleBlogs);
+    assert.deepStrictEqual(result, mostLikedBlog);
   });
 });
