@@ -20,9 +20,23 @@ describe('total likes', () => {
   });
 });
 
-describe('most liked', () => {
+describe('most liked blog', () => {
   test('should return the most liked blog', () => {
     const result = listHelper.mostLiked(listWithMultipleBlogs);
     assert.deepStrictEqual(result, mostLikedBlog);
+  });
+});
+
+describe('author with most blogs', () => {
+  test('should return the author with the biggest number of blogs', () => {
+    const result = listHelper.authorWithMostBlogs(listWithMultipleBlogs);
+    assert.deepStrictEqual(result, { author: 'Robert C. Martin', blogs: 3 });
+  });
+});
+
+describe('author with most likes', () => {
+  test('should return the most liked author with the number of likes', () => {
+    const result = listHelper.authorWithMostLikes(listWithMultipleBlogs);
+    assert.deepStrictEqual(result, { author: 'Edsger W. Dijkstra', likes: 17 });
   });
 });
