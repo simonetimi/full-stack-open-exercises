@@ -55,6 +55,20 @@ test('blogs count increases by one after posting one entry', async () => {
   assert.strictEqual(body.length, blogCount + 1);
 });
 
+test.only('when likes property is missing, it will default to zero', async () => {
+  const response = await api
+    .post('/api/blogs')
+    .send({
+      title: 'Another test',
+      author: 'Test Author',
+    })
+    .set('Accept', 'application/json')
+    .expect('Content-Type', /application\/json/)
+    .expect(201);
+
+  assert.strictEqual(response.body.likes, 0);
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
