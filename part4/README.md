@@ -2,4 +2,4 @@
 
 ### Exercises
 
-- blog-list: 4.1-4.7
+- blog-list: 4.1-4.23
