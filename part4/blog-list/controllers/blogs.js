@@ -42,6 +42,27 @@ blogsRouter.delete('/:id', async (request, response, next) => {
     if (result) {
       response.status(204).end();
     } else {
+      response.status(400);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+blogsRouter.put('/:id', async (request, response, next) => {
+  try {
+    const id = request.params.id;
+    const newBlog = {
+      title: request.body.title,
+      author: request.body.author,
+      url: request.body.url,
+      likes: request.body.likes,
+    };
+    const result = await Blog.findByIdAndUpdate(id, newBlog, { new: true });
+    if (result) {
+      response.json(result);
+      response.status(200).end();
+    } else {
       response.status(404).json({ message: 'Blog not found' });
     }
   } catch (error) {
