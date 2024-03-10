@@ -53,8 +53,20 @@ blogsRouter.post('/', async (request, response, next) => {
 
 blogsRouter.delete('/:id', async (request, response, next) => {
   try {
+    const token = request.token;
+    if (!token) {
+      const error = new Error('Token not found');
+      error.status = 403;
+      throw error;
+    }
     const id = request.params.id;
-    const result = await Blog.findByIdAndDelete(id);
+    const result = await Blog.findById(id);
+    if (result.user.toString() !== token.id) {
+      const error = new Error('User not authorized');
+      error.status = 401;
+      throw error;
+    }
+    await Blog.findByIdAndDelete(id);
     if (result) {
       response.status(204).end();
     } else {
