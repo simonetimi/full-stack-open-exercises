@@ -2,6 +2,7 @@ const usersRouter = require('express').Router();
 const express = require('express');
 const cors = require('cors');
 const User = require('../models/user');
+const Blog = require('../models/blog');
 const bcrypt = require('bcrypt');
 const { object, string } = require('yup');
 
@@ -12,6 +13,19 @@ const userSchema = object({
   username: string().required().min(3, 'Username should be at least 3 characters long'),
   name: string().required(),
   password: string().required().min(3, 'Password should be at least 3 characters long'),
+});
+
+usersRouter.get('/', async (request, response, next) => {
+  try {
+    const users = await User.find({}).populate({
+      path: 'blogs',
+      select: 'title author likes url',
+      model: Blog,
+    });
+    response.json(users);
+  } catch (error) {
+    next(error);
+  }
 });
 
 usersRouter.post('/', async (request, response, next) => {

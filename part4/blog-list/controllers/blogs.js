@@ -2,13 +2,18 @@ const blogsRouter = require('express').Router();
 const express = require('express');
 const cors = require('cors');
 const Blog = require('../models/blog');
+const User = require('../models/user');
 
 blogsRouter.use(express.json());
 blogsRouter.use(cors());
 
 blogsRouter.get('/', async (request, response, next) => {
   try {
-    const blogs = await Blog.find({});
+    const blogs = await Blog.find({}).populate({
+      path: 'user',
+      select: 'username name',
+      model: User,
+    });
     response.json(blogs);
   } catch (error) {
     next(error);
@@ -27,8 +32,13 @@ blogsRouter.get('/:id', async (request, response, next) => {
 
 blogsRouter.post('/', async (request, response, next) => {
   try {
-    const blog = new Blog(request.body);
+    const user = await User.findOne();
+    // adds user id to the blog entry
+    const blog = new Blog({ ...request.body, user: user._id });
     const result = await blog.save();
+    // adds blog id to the blogs array in user
+    user.blogs.push(result._id);
+    await user.save();
     response.status(201).json(result);
   } catch (error) {
     next(error);
