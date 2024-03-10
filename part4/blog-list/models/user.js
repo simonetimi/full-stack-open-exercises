@@ -4,32 +4,32 @@ const { MONGODB_URI } = require('../utils/config.js');
 mongoose.set('strictQuery', false);
 mongoose.connect(MONGODB_URI);
 
-const blogSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  author: { type: String, required: true },
-  url: { type: String, required: true },
-  likes: { type: Number, default: 0 },
+const userSchema = new mongoose.Schema({
+  username: { type: String, required: true },
+  name: { type: String, required: true },
+  password: { type: String, required: true },
 });
 
-blogSchema.virtual('id').get(function () {
+userSchema.virtual('id').get(function () {
   return this._id.toString();
 });
 
-blogSchema.set('toJSON', {
+userSchema.set('toJSON', {
   virtuals: true,
 });
-blogSchema.set('toObject', {
+userSchema.set('toObject', {
   virtuals: true,
 });
 
-blogSchema.set('toJSON', {
+userSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
     delete returnedObject._id;
     delete returnedObject.__v;
+    delete returnedObject.hashedPassword;
   },
 });
 
-const Blog = mongoose.model('Blog', blogSchema);
+const User = mongoose.model('User', userSchema);
 
-module.exports = Blog;
+module.exports = User;
