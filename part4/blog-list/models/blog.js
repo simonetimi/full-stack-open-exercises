@@ -11,6 +11,17 @@ const blogSchema = new mongoose.Schema({
   likes: Number,
 });
 
+blogSchema.virtual('id').get(function () {
+  return this._id.toString();
+});
+
+blogSchema.set('toJSON', {
+  virtuals: true,
+});
+blogSchema.set('toObject', {
+  virtuals: true,
+});
+
 const Blog = mongoose.model('Blog', blogSchema);
 
 module.exports = Blog;

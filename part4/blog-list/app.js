@@ -2,8 +2,9 @@ const blogsRouter = require('./controllers/blogs.js');
 const logger = require('./utils/logger.js');
 const express = require('express');
 const app = express();
-app.use('/api/blogs', blogsRouter);
+
 app.use(express.json());
+app.use('/api/blogs', blogsRouter);
 
 const errorHandler = (error, request, response, next) => {
   logger.error(error.message);

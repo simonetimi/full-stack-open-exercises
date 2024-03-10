@@ -3,17 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const Blog = require('../models/blog');
 
-blogsRouter.use(cors());
 blogsRouter.use(express.json());
-
-blogsRouter.get('/', async (request, response, next) => {
-  try {
-    const blogs = await Blog.find({});
-    response.json(blogs);
-  } catch (error) {
-    next(error);
-  }
-});
+blogsRouter.use(cors());
 
 blogsRouter.get('/', async (request, response, next) => {
   try {
