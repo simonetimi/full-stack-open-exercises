@@ -23,6 +23,7 @@ test('blogs are retrieved correctly as json', async () => {
     .expect(200)
     .expect('Content-Type', /application\/json/);
 });
+
 test('blogs are identified by "id" property', async () => {
   const response = await api
     .get('/api/blogs')
@@ -34,6 +35,24 @@ test('blogs are identified by "id" property', async () => {
   const blogPost = body[0];
   assert(blogPost !== undefined);
   assert(blogPost.id !== undefined);
+});
+
+test('blogs count increases by one after posting one entry', async () => {
+  const getResponse = await api.get('/api/blogs');
+  const blogCount = getResponse.body.length;
+  await api
+    .post('/api/blogs')
+    .send({
+      title: 'Test',
+      author: 'Test Author',
+    })
+    .set('Accept', 'application/json')
+    .expect('Content-Type', /application\/json/)
+    .expect(201);
+
+  const updatedResponse = await api.get('/api/blogs');
+  const body = updatedResponse.body;
+  assert.strictEqual(body.length, blogCount + 1);
 });
 
 after(async () => {
