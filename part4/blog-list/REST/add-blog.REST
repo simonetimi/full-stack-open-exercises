@@ -1,9 +1,11 @@
 POST http://localhost:3001/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik5pdCIsImlkIjoiNjVlZGNmMTFmNTg0NGIwYjA0YTYwZDFiIiwiaWF0IjoxNzEwMDg5NTY0fQ.kWZwvuZhst9wO5Il82vS01wxY5ZwkgucPkkddeIrC8M
 
 {
   "title": "Divine",
   "author": "Simone",
   "url": "http://prova",
-  "likes": 3
+  "likes": 3,
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik5pdCIsImlkIjoiNjVlZGNmMTFmNTg0NGIwYjA0YTYwZDFiIiwiaWF0IjoxNzEwMDg5NTY0fQ.kWZwvuZhst9wO5Il82vS01wxY5ZwkgucPkkddeIrC8M"
 }

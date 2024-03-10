@@ -4,8 +4,26 @@ const usersRouter = require('./controllers/users.js');
 const logger = require('./utils/logger.js');
 const express = require('express');
 const app = express();
+const jwt = require('jsonwebtoken');
 
 app.use(express.json());
+
+function extractToken(request, response, next) {
+  const authorizationHeader = request.headers['authorization'];
+  if (typeof authorizationHeader !== 'undefined') {
+    const token = authorizationHeader.split(' ')[1];
+    const decodedToken = jwt.verify(token, process.env.SECRET);
+    request.token = decodedToken;
+    next();
+  } else {
+    request.token = false;
+    next();
+  }
+}
+
+// applies to every route
+app.use(extractToken);
+
 app.use('/api/login', loginRouter);
 app.use('/api/blogs', blogsRouter);
 app.use('/api/users', usersRouter);

@@ -32,7 +32,13 @@ blogsRouter.get('/:id', async (request, response, next) => {
 
 blogsRouter.post('/', async (request, response, next) => {
   try {
-    const user = await User.findOne();
+    const token = request.token;
+    if (!token) {
+      const error = new Error('Token not found');
+      error.status = 403;
+      throw error;
+    }
+    const user = await User.findOne({ username: token.username });
     // adds user id to the blog entry
     const blog = new Blog({ ...request.body, user: user._id });
     const result = await blog.save();
