@@ -6,18 +6,32 @@ const Blog = require('../models/blog');
 blogsRouter.use(cors());
 blogsRouter.use(express.json());
 
-blogsRouter.get('/', (request, response) => {
-  Blog.find({}).then((blogs) => {
+blogsRouter.get('/', async (request, response, next) => {
+  try {
+    const blogs = await Blog.find({});
     response.json(blogs);
-  });
+  } catch (error) {
+    next(error);
+  }
 });
 
-blogsRouter.post('/', (request, response) => {
-  const blog = new Blog(request.body);
+blogsRouter.get('/', async (request, response, next) => {
+  try {
+    const blogs = await Blog.find({});
+    response.json(blogs);
+  } catch (error) {
+    next(error);
+  }
+});
 
-  blog.save().then((result) => {
+blogsRouter.post('/', async (request, response, next) => {
+  try {
+    const blog = new Blog(request.body);
+    const result = await blog.save();
     response.status(201).json(result);
-  });
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = blogsRouter;
