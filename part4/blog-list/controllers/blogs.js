@@ -59,7 +59,7 @@ blogsRouter.delete('/:id', async (request, response, next) => {
     }
     const id = request.params.id;
     const result = await Blog.findById(id);
-    if (result.user.toString() !== request.userId) {
+    if (!result.user.toString().includes(request.userId)) {
       const error = new Error('User not authorized');
       error.status = 401;
       throw error;
@@ -68,7 +68,7 @@ blogsRouter.delete('/:id', async (request, response, next) => {
     if (result) {
       response.status(204).end();
     } else {
-      response.status(400);
+      response.status(404).end();
     }
   } catch (error) {
     next(error);

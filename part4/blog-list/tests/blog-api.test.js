@@ -53,6 +53,17 @@ describe('posts can be retrieved', () => {
 // post tests
 describe('blogs can be added respecting the schema', () => {
   test('blogs count increases by one after posting one entry', async () => {
+    await api.post('/api/users').send({
+      username: 'Nit',
+      password: 'prova',
+      name: 'Simone',
+      _id: new mongoose.Types.ObjectId('65ee13873e4cd866c0bfcc85'),
+    });
+    const login = await api
+      .post('/api/login')
+      .send({ username: 'Nit', password: 'prova' })
+      .set('Content-Type', 'application/json');
+    const token = login.body.token;
     const getResponse = await api.get('/api/blogs');
     const blogCount = getResponse.body.length;
     await api
@@ -63,6 +74,7 @@ describe('blogs can be added respecting the schema', () => {
         url: 'http://test.test',
       })
       .set('Accept', 'application/json')
+      .set('Authorization', `Bearer ${token}`)
       .expect('Content-Type', /application\/json/)
       .expect(201);
 
@@ -72,14 +84,20 @@ describe('blogs can be added respecting the schema', () => {
   });
 
   test('when likes property is missing, it will default to zero', async () => {
+    const login = await api
+      .post('/api/login')
+      .send({ username: 'Nit', password: 'prova' })
+      .set('Content-Type', 'application/json');
+    const token = login.body.token;
     const response = await api
       .post('/api/blogs')
       .send({
-        title: 'Another test',
+        title: 'Test',
         author: 'Test Author',
         url: 'http://test.test',
       })
       .set('Accept', 'application/json')
+      .set('Authorization', `Bearer ${token}`)
       .expect('Content-Type', /application\/json/)
       .expect(201);
 
@@ -87,13 +105,19 @@ describe('blogs can be added respecting the schema', () => {
   });
 
   test('if url property is missing, it should return bad request 400 error', async () => {
+    const login = await api
+      .post('/api/login')
+      .send({ username: 'Nit', password: 'prova' })
+      .set('Content-Type', 'application/json');
+    const token = login.body.token;
     await api
       .post('/api/blogs')
       .send({
-        title: 'Yet another test',
+        title: 'Test',
         author: 'Test Author',
       })
       .set('Accept', 'application/json')
+      .set('Authorization', `Bearer ${token}`)
       .expect('Content-Type', /application\/json/)
       .expect(400);
   });
@@ -102,10 +126,26 @@ describe('blogs can be added respecting the schema', () => {
 // update and delete blogs
 describe('blogs can be updated and deleted correctly', () => {
   test('if id is correct and present, the blog should be deleted', async () => {
-    await api.delete('/api/blogs/5a422a851b54a676234d17f7').expect(204);
+    const login = await api
+      .post('/api/login')
+      .send({ username: 'Nit', password: 'prova' })
+      .set('Content-Type', 'application/json');
+    const token = login.body.token;
+    await api
+      .delete('/api/blogs/5a422a851b54a676234d17f7')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(204);
   });
   test('if id is incorrect, it will return error', async () => {
-    await api.delete('/api/blogs/5a422a851b54a676234d17g7').expect(400);
+    const login = await api
+      .post('/api/login')
+      .send({ username: 'Nit', password: 'prova' })
+      .set('Content-Type', 'application/json');
+    const token = login.body.token;
+    await api
+      .delete('/api/blogs/5a422a851b54a676234d17g7')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(400);
   });
 
   test('if id is correct, will update and return the updates object', async () => {

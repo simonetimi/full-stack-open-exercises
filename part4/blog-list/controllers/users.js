@@ -40,6 +40,7 @@ usersRouter.post('/', async (request, response, next) => {
     const newUser = {
       ...userToValidate,
       password: hashedPassword,
+      _id: request.body._id,
     };
     const user = new User(newUser);
     const result = await user.save();
