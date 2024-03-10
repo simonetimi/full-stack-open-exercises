@@ -32,13 +32,12 @@ blogsRouter.get('/:id', async (request, response, next) => {
 
 blogsRouter.post('/', async (request, response, next) => {
   try {
-    const token = request.token;
-    if (!token) {
+    if (!request.username) {
       const error = new Error('Token not found');
       error.status = 403;
       throw error;
     }
-    const user = await User.findOne({ username: token.username });
+    const user = await User.findOne({ username: request.username });
     // adds user id to the blog entry
     const blog = new Blog({ ...request.body, user: user._id });
     const result = await blog.save();
@@ -53,15 +52,14 @@ blogsRouter.post('/', async (request, response, next) => {
 
 blogsRouter.delete('/:id', async (request, response, next) => {
   try {
-    const token = request.token;
-    if (!token) {
+    if (!request.username) {
       const error = new Error('Token not found');
       error.status = 403;
       throw error;
     }
     const id = request.params.id;
     const result = await Blog.findById(id);
-    if (result.user.toString() !== token.id) {
+    if (result.user.toString() !== request.userId) {
       const error = new Error('User not authorized');
       error.status = 401;
       throw error;
