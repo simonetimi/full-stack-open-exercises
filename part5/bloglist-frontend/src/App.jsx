@@ -81,7 +81,14 @@ const App = () => {
           </button>
           <h2>blogs</h2>
           {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} />
+            <Blog
+              key={blog.id}
+              blog={blog}
+              blogs={blogs}
+              setBlogs={setBlogs}
+              token={token}
+              setMessage={setMessage}
+            />
           ))}
           <div style={{ marginTop: '20px' }}>
             <Toggable buttonLabel={'add new blog'}>
