@@ -4,6 +4,7 @@ import blogService from './services/blogs';
 import axios from 'axios';
 import { Login } from './components/Login';
 import Toggable from './components/Toggable';
+import NewBlog from './components/NewBlog';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -12,7 +13,6 @@ const App = () => {
   const [message, setMessage] = useState('');
   const [token, setToken] = useState();
   const [userDet, setUserDet] = useState('');
-  const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '' });
 
   useEffect(() => {
     try {
@@ -66,34 +66,6 @@ const App = () => {
     location.reload();
   };
 
-  const handeOnChangeTitle = (event) => {
-    setNewBlog({ ...newBlog, title: event.target.value });
-  };
-
-  const handeOnChangeAuthor = (event) => {
-    setNewBlog({ ...newBlog, author: event.target.value });
-  };
-
-  const handeOnChangeUrl = (event) => {
-    setNewBlog({ ...newBlog, url: event.target.value });
-  };
-
-  const handleOnSubmitNewBlog = async (event) => {
-    event.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:3001/api/blogs', newBlog, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setBlogs([...blogs, newBlog]);
-      setMessage('Blog submitted successfully');
-      setTimeout(() => {
-        setMessage('');
-      }, 3000);
-    } catch (error) {
-      setMessage(error.message);
-    }
-  };
-
   return (
     <>
       {message !== '' ? (
@@ -112,21 +84,7 @@ const App = () => {
             <Blog key={blog.id} blog={blog} />
           ))}
           <Toggable buttonLabel={'add new blog'}>
-            <h2>Insert new blog</h2>
-            <form>
-              <label>
-                Title: <input type="text" onChange={handeOnChangeTitle}></input>
-              </label>
-              <label>
-                Author: <input type="text" onChange={handeOnChangeAuthor}></input>
-              </label>
-              <label>
-                Url: <input type="text" onChange={handeOnChangeUrl}></input>
-                <button type="submit" onClick={handleOnSubmitNewBlog}>
-                  New blog
-                </button>
-              </label>
-            </form>
+            <NewBlog token={token} setMessage={setMessage} setBlogs={setBlogs} blogs={blogs} />
           </Toggable>
         </div>
       ) : (
