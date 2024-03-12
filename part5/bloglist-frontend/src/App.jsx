@@ -74,7 +74,7 @@ const App = () => {
         </div>
       ) : null}
       {token ? (
-        <div>
+        <div style={{ margin: '4px' }}>
           <p>{userDet} logged in</p>
           <button type="text" onClick={handleOnLogout}>
             logout
@@ -83,9 +83,11 @@ const App = () => {
           {blogs.map((blog) => (
             <Blog key={blog.id} blog={blog} />
           ))}
-          <Toggable buttonLabel={'add new blog'}>
-            <NewBlog token={token} setMessage={setMessage} setBlogs={setBlogs} blogs={blogs} />
-          </Toggable>
+          <div style={{ marginTop: '20px' }}>
+            <Toggable buttonLabel={'add new blog'}>
+              <NewBlog token={token} setMessage={setMessage} setBlogs={setBlogs} blogs={blogs} />
+            </Toggable>
+          </div>
         </div>
       ) : (
         <Login
