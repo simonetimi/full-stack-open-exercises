@@ -3,6 +3,7 @@ import Blog from './components/Blog';
 import blogService from './services/blogs';
 import axios from 'axios';
 import { Login } from './components/Login';
+import Toggable from './components/Toggable';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -110,21 +111,23 @@ const App = () => {
           {blogs.map((blog) => (
             <Blog key={blog.id} blog={blog} />
           ))}
-          <h2>Insert new blog</h2>
-          <form>
-            <label>
-              Title: <input type="text" onChange={handeOnChangeTitle}></input>
-            </label>
-            <label>
-              Author: <input type="text" onChange={handeOnChangeAuthor}></input>
-            </label>
-            <label>
-              Url: <input type="text" onChange={handeOnChangeUrl}></input>
-              <button type="submit" onClick={handleOnSubmitNewBlog}>
-                New blog
-              </button>
-            </label>
-          </form>
+          <Toggable buttonLabel={'add new blog'}>
+            <h2>Insert new blog</h2>
+            <form>
+              <label>
+                Title: <input type="text" onChange={handeOnChangeTitle}></input>
+              </label>
+              <label>
+                Author: <input type="text" onChange={handeOnChangeAuthor}></input>
+              </label>
+              <label>
+                Url: <input type="text" onChange={handeOnChangeUrl}></input>
+                <button type="submit" onClick={handleOnSubmitNewBlog}>
+                  New blog
+                </button>
+              </label>
+            </form>
+          </Toggable>
         </div>
       ) : (
         <Login
