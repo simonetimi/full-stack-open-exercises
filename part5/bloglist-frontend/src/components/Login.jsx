@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 export const Login = ({
   username,
   password,
@@ -32,4 +34,12 @@ export const Login = ({
       </button>
     </div>
   );
+};
+
+Login.propTypes = {
+  handleOnLogin: PropTypes.func.isRequired,
+  handleOnChangeUsername: PropTypes.func.isRequired,
+  handleOnChangePassword: PropTypes.func.isRequired,
+  username: PropTypes.string.isRequired,
+  password: PropTypes.string.isRequired,
 };

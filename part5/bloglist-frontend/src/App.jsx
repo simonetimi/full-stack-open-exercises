@@ -36,17 +36,25 @@ const App = () => {
 
   const handleOnLogin = async () => {
     try {
-      const response = await axios.post(`http://localhost:3001/api/login`, {
+      const response = await axios.post('http://localhost:3001/api/login', {
         username,
         password,
       });
       const sessionToken = response.data.token;
       setToken(sessionToken);
-      setUserDet({ name: response.data.name, username: response.data.username });
+      setUserDet({
+        name: response.data.name,
+        username: response.data.username,
+        id: response.data.id,
+      });
       localStorage.setItem('token', JSON.stringify(sessionToken));
       localStorage.setItem(
         'userDetails',
-        JSON.stringify({ name: response.data.name, username: response.data.username })
+        JSON.stringify({
+          name: response.data.name,
+          username: response.data.username,
+          id: response.data.id,
+        })
       );
     } catch (error) {
       setMessage(error.message);
@@ -103,7 +111,13 @@ const App = () => {
           ))}
           <div style={{ marginTop: '20px' }}>
             <Toggable buttonLabel={'add new blog'}>
-              <NewBlog token={token} setMessage={setMessage} setBlogs={setBlogs} blogs={blogs} />
+              <NewBlog
+                userId={userDet.id}
+                token={token}
+                setMessage={setMessage}
+                setBlogs={setBlogs}
+                blogs={blogs}
+              />
             </Toggable>
           </div>
         </div>
