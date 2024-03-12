@@ -8,7 +8,7 @@ const style = {
   borderRadius: '12px',
 };
 
-const Blog = ({ blog, blogs, setBlogs, token, setMessage }) => {
+const Blog = ({ blog, blogs, setBlogs, token, setMessage, username }) => {
   const handleOnUpdateLikes = async () => {
     try {
       const newBlog = { ...blog, likes: blog.likes + 1 };
@@ -22,7 +22,22 @@ const Blog = ({ blog, blogs, setBlogs, token, setMessage }) => {
       blog.likes += 1;
     } catch (error) {
       setMessage(error.message);
+      setTimeout(() => {
+        setMessage('');
+      }, 3000);
     }
+  };
+
+  const handleOnDelete = async () => {
+    if (!window.confirm('Are you sure you wanna delete the blog entry?')) {
+      return;
+    }
+    await axios.delete(`http://localhost:3001/api/blogs/${blog.id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const blogToDeleteIndex = blogs.findIndex((obj) => obj.id === blog.id);
+    const newBlogs = blogs.toSpliced(blogToDeleteIndex, 1);
+    setBlogs(newBlogs);
   };
 
   return (
@@ -35,6 +50,14 @@ const Blog = ({ blog, blogs, setBlogs, token, setMessage }) => {
           Likes: {blog.likes} <button onClick={handleOnUpdateLikes}>like</button>
         </p>
         <p>Added by: {blog.user.username}</p>
+        {username === blog.user.username ? (
+          <button
+            onClick={handleOnDelete}
+            style={{ backgroundColor: 'red', borderRadius: '6px', color: 'white' }}
+          >
+            delete
+          </button>
+        ) : null}
       </Togglable>
     </div>
   );

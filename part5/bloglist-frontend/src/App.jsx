@@ -12,16 +12,17 @@ const App = () => {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [token, setToken] = useState();
-  const [userDet, setUserDet] = useState('');
+  const [userDet, setUserDet] = useState({ name: 'default', username: 'default' });
 
   useEffect(() => {
     try {
       const storedToken = localStorage.getItem('token');
       if (storedToken) {
         const sessionToken = JSON.parse(storedToken);
-        const name = localStorage.getItem('userDetails');
+        const details = localStorage.getItem('userDetails');
+        const parsedDetails = JSON.parse(details);
+        setUserDet(parsedDetails);
         setToken(sessionToken);
-        setUserDet(name);
       }
       blogService.getAll().then((blogs) => setBlogs(blogs));
     } catch (error) {
@@ -41,9 +42,12 @@ const App = () => {
       });
       const sessionToken = response.data.token;
       setToken(sessionToken);
-      setUserDet(response.data.name);
+      setUserDet({ name: response.data.name, username: response.data.username });
       localStorage.setItem('token', JSON.stringify(sessionToken));
-      localStorage.setItem('userDetails', JSON.stringify(response.data.name));
+      localStorage.setItem(
+        'userDetails',
+        JSON.stringify({ name: response.data.name, username: response.data.username })
+      );
     } catch (error) {
       setMessage(error.message);
       setTimeout(() => {
@@ -80,7 +84,7 @@ const App = () => {
       ) : null}
       {token ? (
         <div style={{ margin: '4px' }}>
-          <p>{userDet} logged in</p>
+          <p>{userDet.name} logged in</p>
           <button type="text" onClick={handleOnLogout}>
             logout
           </button>
@@ -88,6 +92,7 @@ const App = () => {
           <button onClick={handleOnSort}>sort by likes</button>
           {blogs.map((blog) => (
             <Blog
+              username={userDet.username}
               key={blog.id}
               blog={blog}
               blogs={blogs}
