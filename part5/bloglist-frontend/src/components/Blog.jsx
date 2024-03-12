@@ -45,10 +45,9 @@ const Blog = ({ blog, blogs, setBlogs, token, setMessage, username }) => {
       {blog.title}
       <Togglable buttonLabel={'Show more'}>
         <p>Author: {blog.author}</p>
-        <p>Blog url: {blog.url}</p>
-        <p>
-          Likes: {blog.likes} <button onClick={handleOnUpdateLikes}>like</button>
-        </p>
+        {blog.url ? <p id="url">Blog url: {blog.url}</p> : null}
+        {blog.likes > 0 ? <p id="likes">Likes: {blog.likes}</p> : null}{' '}
+        <button onClick={handleOnUpdateLikes}>like</button>
         <p>Added by: {blog.user.username}</p>
         {username === blog.user.username ? (
           <button

@@ -3,9 +3,11 @@ const blogsRouter = require('./controllers/blogs.js');
 const usersRouter = require('./controllers/users.js');
 const logger = require('./utils/logger.js');
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const { extractToken } = require('./utils/middleware.js');
 app.use(express.json());
+app.use(cors());
 
 app.use('/api/login', loginRouter);
 app.use('/api/blogs', extractToken, blogsRouter);
