@@ -15,7 +15,10 @@ const Blog = ({ blog, blogs, setBlogs, token, setMessage }) => {
       await axios.put(`http://localhost:3001/api/blogs/${blog.id}`, newBlog, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setBlogs([...blogs, newBlog]);
+      const blogToUpdateIndex = blogs.findIndex((obj) => obj.id === newBlog.id);
+      const newBlogs = [...blogs];
+      newBlogs[blogToUpdateIndex] = newBlog;
+      setBlogs(newBlogs);
       blog.likes += 1;
     } catch (error) {
       setMessage(error.message);
@@ -31,6 +34,7 @@ const Blog = ({ blog, blogs, setBlogs, token, setMessage }) => {
         <p>
           Likes: {blog.likes} <button onClick={handleOnUpdateLikes}>like</button>
         </p>
+        <p>Added by: {blog.user.username}</p>
       </Togglable>
     </div>
   );
