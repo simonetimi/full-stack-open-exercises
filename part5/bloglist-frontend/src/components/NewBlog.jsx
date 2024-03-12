@@ -2,18 +2,12 @@ import { useState } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 
-const NewBlog = ({ token, setBlogs, setMessage, blogs, userId }) => {
+const NewBlog = ({ token, setBlogs, setMessage, blogs, userId, submitForm }) => {
   const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '', user: userId });
-  const handeOnChangeTitle = (event) => {
-    setNewBlog({ ...newBlog, title: event.target.value });
-  };
 
-  const handeOnChangeAuthor = (event) => {
-    setNewBlog({ ...newBlog, author: event.target.value });
-  };
-
-  const handeOnChangeUrl = (event) => {
-    setNewBlog({ ...newBlog, url: event.target.value });
+  const handleOnChange = (event) => {
+    const { name, value } = event.target;
+    setNewBlog({ ...newBlog, [name]: value });
   };
 
   const handleOnSubmitNewBlog = async (event) => {
@@ -35,19 +29,17 @@ const NewBlog = ({ token, setBlogs, setMessage, blogs, userId }) => {
   return (
     <>
       <h2>Insert new blog</h2>
-      <form>
+      <form onSubmit={submitForm ? () => submitForm(newBlog) : handleOnSubmitNewBlog}>
         <label>
-          Title: <input type="text" onChange={handeOnChangeTitle}></input>
+          Title: <input type="text" name="title" onChange={handleOnChange}></input>
         </label>
         <label>
-          Author: <input type="text" onChange={handeOnChangeAuthor}></input>
+          Author: <input type="text" name="author" onChange={handleOnChange}></input>
         </label>
         <label>
-          Url: <input type="text" onChange={handeOnChangeUrl}></input>
-          <button type="submit" onClick={handleOnSubmitNewBlog}>
-            New blog
-          </button>
+          Url: <input type="text" name="url" onChange={handleOnChange}></input>
         </label>
+        <button type="submit">New blog</button>
       </form>
     </>
   );
@@ -58,6 +50,7 @@ NewBlog.propTypes = {
   token: PropTypes.string.isRequired,
   setBlogs: PropTypes.func.isRequired,
   blogs: PropTypes.array.isRequired,
+  submitForm: PropTypes.func,
 };
 
 export default NewBlog;
