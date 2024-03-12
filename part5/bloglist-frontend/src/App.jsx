@@ -53,6 +53,11 @@ const App = () => {
     }
   };
 
+  const handleOnSort = () => {
+    const sortedBlogs = blogs.toSorted((a, b) => b.likes - a.likes);
+    setBlogs(sortedBlogs);
+  };
+
   const handleOnChangeUsername = (event) => {
     setUsername(event.target.value);
   };
@@ -79,7 +84,8 @@ const App = () => {
           <button type="text" onClick={handleOnLogout}>
             logout
           </button>
-          <h2>blogs</h2>
+          <h2>Blogs</h2>
+          <button onClick={handleOnSort}>sort by likes</button>
           {blogs.map((blog) => (
             <Blog
               key={blog.id}
