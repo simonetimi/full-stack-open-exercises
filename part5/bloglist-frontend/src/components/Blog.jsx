@@ -8,7 +8,7 @@ const style = {
   borderRadius: '12px',
 };
 
-const Blog = ({ blog, blogs, setBlogs, token, setMessage, username }) => {
+const Blog = ({ blog, blogs, setBlogs, token, setMessage, username, updateLikes }) => {
   const handleOnUpdateLikes = async () => {
     try {
       const newBlog = { ...blog, likes: blog.likes + 1 };
@@ -47,7 +47,7 @@ const Blog = ({ blog, blogs, setBlogs, token, setMessage, username }) => {
         <p>Author: {blog.author}</p>
         {blog.url ? <p id="url">Blog url: {blog.url}</p> : null}
         {blog.likes > 0 ? <p id="likes">Likes: {blog.likes}</p> : null}{' '}
-        <button onClick={handleOnUpdateLikes}>like</button>
+        <button onClick={updateLikes || handleOnUpdateLikes}>like</button>
         <p>Added by: {blog.user.username}</p>
         {username === blog.user.username ? (
           <button
