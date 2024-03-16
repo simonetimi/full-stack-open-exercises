@@ -1,4 +1,5 @@
-import { test, expect, beforeEach, describe } from '@playwright/test';
+import { test, expect, beforeEach, describe, beforeAll } from '@playwright/test';
+import { afterEach } from 'node:test';
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
@@ -40,7 +41,7 @@ describe('Blog app', () => {
 });
 
 describe('When logged in', () => {
-  beforeEach(async ({ page, request }) => {
+  beforeAll(async ({ request }) => {
     await request.post('api/testing/reset');
     await request.post('/api/users', {
       data: {
@@ -49,6 +50,8 @@ describe('When logged in', () => {
         password: 'prova',
       },
     });
+  });
+  beforeEach(async ({ page, request }) => {
     await page.goto('/');
     await page.getByLabel('Username:').fill('Nit');
     await page.getByLabel('Password:').fill('prova');
@@ -86,10 +89,12 @@ describe('When logged in', () => {
     await page.getByRole('textbox', { name: /url:/i }).fill('Url');
     await page.getByRole('button', { name: /new blog/i }).click();
 
-    await expect(page.getByText(/second/i)).toBeVisible();
+    const secondBlog = page.getByText(/second/i);
+
+    await expect(secondBlog).toBeVisible();
 
     // expand
-    await page.getByRole('button', { name: /show more/i }).click();
+    await secondBlog.getByRole('button', { name: /show more/i }).click();
 
     // click like button
     await page
@@ -106,5 +111,22 @@ describe('When logged in', () => {
       .getByRole('button', { name: /like/i })
       .click();
     await expect(page.getByText(/likes: 2/i)).toBeVisible();
+  });
+
+  test('a blog can be deleted', async ({ page }) => {
+    // set accept dialog
+    page.on('dialog', (dialog) => dialog.accept());
+
+    //get second blog
+    const secondBlog = page.getByText(/second/i);
+    await secondBlog.getByRole('button', { name: /show more/i }).click();
+
+    // click delete
+    await page
+      .getByText(/second/i)
+      .getByRole('button', { name: /delete/i })
+      .click();
+
+    await expect(secondBlog).not.toBeVisible();
   });
 });
