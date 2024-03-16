@@ -50,6 +50,13 @@ describe('When logged in', () => {
         password: 'prova',
       },
     });
+    await request.post('/api/users', {
+      data: {
+        name: 'Marco',
+        username: 'Marc11',
+        password: 'prova',
+      },
+    });
   });
   beforeEach(async ({ page, request }) => {
     await page.goto('/');
@@ -128,5 +135,27 @@ describe('When logged in', () => {
       .click();
 
     await expect(secondBlog).not.toBeVisible();
+  });
+
+  test('delete button can only be viewed by the user who published the blog', async ({ page }) => {
+    // logout
+    await page.getByRole('button', { name: /logout/i }).click();
+
+    //login with second user
+    await page.getByLabel('Username:').fill('Marc11');
+    await page.getByLabel('Password:').fill('prova');
+    await page
+      .getByRole('button', {
+        name: /login/i,
+      })
+      .click();
+
+    // show more
+    await page.getByRole('button', { name: /show more/i }).click();
+
+    // delete shouldn't be visible
+    await expect(
+      page.getByText(/first/i).getByRole('button', { name: /delete/i })
+    ).not.toBeVisible();
   });
 });
