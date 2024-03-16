@@ -1,4 +1,4 @@
-import { test, expect, beforeEach, describe, screen } from '@playwright/test';
+import { test, expect, beforeEach, describe } from '@playwright/test';
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
@@ -65,11 +65,46 @@ describe('When logged in', () => {
         name: /add new blog/i,
       })
       .click();
-    await page.getByRole('textbox', { name: /title:/i }).fill('Sample Title');
+    await page.getByRole('textbox', { name: /title:/i }).fill('First');
     await page.getByRole('textbox', { name: /author:/i }).fill('Author');
     await page.getByRole('textbox', { name: /url:/i }).fill('Url');
     await page.getByRole('button', { name: /new blog/i }).click();
 
-    await expect(page.getByText(/sample title/i)).toBeVisible();
+    await expect(page.getByText(/first/i)).toBeVisible();
+    await page.getByRole('button', { name: /show more/i }).click();
+  });
+
+  test('a blog can be edited incrementing likes', async ({ page }) => {
+    await page
+      .getByRole('button', {
+        name: /add new blog/i,
+      })
+      .click();
+    // create the entry
+    await page.getByRole('textbox', { name: /title:/i }).fill('Second');
+    await page.getByRole('textbox', { name: /author:/i }).fill('Author');
+    await page.getByRole('textbox', { name: /url:/i }).fill('Url');
+    await page.getByRole('button', { name: /new blog/i }).click();
+
+    await expect(page.getByText(/second/i)).toBeVisible();
+
+    // expand
+    await page.getByRole('button', { name: /show more/i }).click();
+
+    // click like button
+    await page
+      .getByText(/second/i)
+      .getByRole('button', { name: /like/i })
+      .click();
+
+    // likes should be visible: 1
+    await expect(page.getByText(/likes: 1/i)).toBeVisible();
+
+    // click again, increments
+    await page
+      .getByText(/second/i)
+      .getByRole('button', { name: /like/i })
+      .click();
+    await expect(page.getByText(/likes: 2/i)).toBeVisible();
   });
 });
