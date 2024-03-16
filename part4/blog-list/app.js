@@ -12,6 +12,10 @@ app.use(cors());
 app.use('/api/login', loginRouter);
 app.use('/api/blogs', extractToken, blogsRouter);
 app.use('/api/users', usersRouter);
+if (process.env.NODE_ENV === 'test') {
+  const testingRouter = require('./controllers/testing');
+  app.use('/api/testing', testingRouter);
+}
 
 const errorHandler = (error, request, response, next) => {
   logger.error(error.message);
