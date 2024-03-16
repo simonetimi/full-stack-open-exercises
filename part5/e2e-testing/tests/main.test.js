@@ -2,8 +2,8 @@ import { test, expect, beforeEach, describe, screen } from '@playwright/test';
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
-    await request.post('http://localhost:3001/api/testing/reset');
-    await request.post('http://localhost:3001/api/users', {
+    await request.post('api/testing/reset');
+    await request.post('api/users', {
       data: {
         name: 'Simone',
         username: 'Nit',
@@ -36,5 +36,40 @@ describe('Blog app', () => {
       })
       .click();
     await expect(page.getByText(/request failed with status code 401/i)).toBeVisible();
+  });
+});
+
+describe('When logged in', () => {
+  beforeEach(async ({ page, request }) => {
+    await request.post('api/testing/reset');
+    await request.post('/api/users', {
+      data: {
+        name: 'Simone',
+        username: 'Nit',
+        password: 'prova',
+      },
+    });
+    await page.goto('/');
+    await page.getByLabel('Username:').fill('Nit');
+    await page.getByLabel('Password:').fill('prova');
+    await page
+      .getByRole('button', {
+        name: /login/i,
+      })
+      .click();
+  });
+
+  test('a new blog can be created', async ({ page }) => {
+    await page
+      .getByRole('button', {
+        name: /add new blog/i,
+      })
+      .click();
+    await page.getByRole('textbox', { name: /title:/i }).fill('Sample Title');
+    await page.getByRole('textbox', { name: /author:/i }).fill('Author');
+    await page.getByRole('textbox', { name: /url:/i }).fill('Url');
+    await page.getByRole('button', { name: /new blog/i }).click();
+
+    await expect(page.getByText(/sample title/i)).toBeVisible();
   });
 });
