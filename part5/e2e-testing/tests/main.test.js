@@ -159,3 +159,79 @@ describe('When logged in', () => {
     ).not.toBeVisible();
   });
 });
+
+describe('When sorting', () => {
+  beforeAll(async ({ request }) => {
+    await request.post('api/testing/reset');
+    await request.post('/api/users', {
+      data: {
+        name: 'Simone',
+        username: 'Nit',
+        password: 'prova',
+      },
+    });
+  });
+  beforeEach(async ({ page, request }) => {
+    await page.goto('/');
+    await page.getByLabel('Username:').fill('Nit');
+    await page.getByLabel('Password:').fill('prova');
+    await page
+      .getByRole('button', {
+        name: /login/i,
+      })
+      .click();
+  });
+
+  test('if sorting will rearrange the order of the blogs by like', async ({ page }) => {
+    await page
+      .getByRole('button', {
+        name: /add new blog/i,
+      })
+      .click();
+    // create 3 entries
+
+    const submitBlog = page.getByRole('button', { name: /new blog/i });
+    // first
+    await page.getByRole('textbox', { name: /title:/i }).fill('First');
+    await page.getByRole('textbox', { name: /author:/i }).fill('Author');
+    await page.getByRole('textbox', { name: /url:/i }).fill('Url');
+    await submitBlog.click();
+    await page.waitForTimeout(500);
+
+    // second
+    await page.getByRole('textbox', { name: /title:/i }).fill('Second');
+    await page.getByRole('textbox', { name: /author:/i }).fill('Author');
+    await page.getByRole('textbox', { name: /url:/i }).fill('Url');
+    await submitBlog.click();
+    await page.waitForTimeout(500);
+    // third
+    await page.getByRole('textbox', { name: /title:/i }).fill('Third');
+    await page.getByRole('textbox', { name: /author:/i }).fill('Author');
+    await page.getByRole('textbox', { name: /url:/i }).fill('Url');
+    await submitBlog.click();
+
+    // show more third blog
+    await page
+      .getByText(/third/i)
+      .getByRole('button', { name: /show more/i })
+      .click();
+
+    // click like
+    await page.getByText(/third/i).getByRole('button', { name: /like/i }).click();
+
+    // click sort
+    await page.getByRole('button', { name: /sort by likes/i }).click();
+    await page.waitForTimeout(500);
+
+    // select all blogs in make array
+    const locateBlogs = page.locator('.blog');
+    const arrayOfBlogs = await locateBlogs.evaluateAll((blogs) => blogs.map((n) => n.textContent));
+
+    // find indexes
+    const thirdIndex = arrayOfBlogs.findIndex((blog) => blog.includes('Third'));
+    const secondIndex = arrayOfBlogs.findIndex((blog) => blog.includes('Second'));
+
+    // compare third (should have more likes and be first, so lower index)
+    expect(thirdIndex).toBeLessThan(secondIndex);
+  });
+});
