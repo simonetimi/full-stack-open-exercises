@@ -41,7 +41,7 @@ const Blog = ({ blog, blogs, setBlogs, token, setMessage, username, updateLikes 
   };
 
   return (
-    <div style={style}>
+    <div style={style} className="blog">
       {blog.title}
       <Togglable buttonLabel={'Show more'}>
         <p>Author: {blog.author}</p>
