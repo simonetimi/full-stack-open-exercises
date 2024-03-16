@@ -41,6 +41,11 @@ blogsRouter.post('/', async (request, response, next) => {
     // adds user id to the blog entry
     const blog = new Blog({ ...request.body, user: user._id });
     const result = await blog.save();
+    await result.populate({
+      path: 'user',
+      select: 'username name',
+      model: User,
+    });
     // adds blog id to the blogs array in user
     user.blogs.push(result._id);
     await user.save();
