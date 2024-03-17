@@ -14,4 +14,12 @@ const createNew = async (content) => {
   return response.data;
 };
 
-export { createNew, getAll };
+const updateOne = async (id) => {
+  const anecdotes = await getAll();
+  const object = anecdotes.filter((anecdote) => anecdote.id === id);
+  object[0].votes += 1;
+  const response = await axios.put(`${url}/${id}`, object[0]);
+  return response.data;
+};
+
+export { createNew, getAll, updateOne };
