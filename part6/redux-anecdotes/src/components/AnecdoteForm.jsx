@@ -1,14 +1,16 @@
 import { useDispatch } from 'react-redux';
 import { addAnecdote } from '../reducers/anecdoteReducer';
 import { setMessage, removeMessage } from '../reducers/notificationReducer';
+import { createNew } from '../utils/connect';
 
 const AnecdoteForm = () => {
   const dispatch = useDispatch();
-  const add = (event) => {
+  const add = async (event) => {
     event.preventDefault();
     const content = event.target.newAnecdote.value;
     event.target.newAnecdote.value = '';
-    dispatch(addAnecdote(content));
+    const response = await createNew(content);
+    dispatch(addAnecdote(response));
     dispatch(setMessage('You created a new note'));
     setTimeout(() => dispatch(removeMessage('')), 5000);
   };
