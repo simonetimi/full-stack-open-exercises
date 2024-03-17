@@ -3,3 +3,4 @@
 ### Exercises
 
 - unicafe-redux: 6.1-6.2
+- redux-anecdotes 6.3 - 6.8
