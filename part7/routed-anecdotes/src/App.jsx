@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Routes, Route, Link, useParams } from 'react-router-dom';
+import { useState } from 'react';
+import { Routes, Route, Link, useParams, useNavigate } from 'react-router-dom';
 
 const Menu = () => {
   const padding = {
@@ -84,6 +84,7 @@ const Footer = () => (
 );
 
 const CreateNew = (props) => {
+  const navigate = useNavigate();
   const [content, setContent] = useState('');
   const [author, setAuthor] = useState('');
   const [info, setInfo] = useState('');
@@ -96,6 +97,11 @@ const CreateNew = (props) => {
       info,
       votes: 0,
     });
+    props.setNotification(`Anecdote created successfully: ${content}`);
+    setTimeout(() => {
+      props.setNotification('');
+    }, 3000);
+    navigate('/');
   };
 
   return (
@@ -163,10 +169,14 @@ const App = () => {
       <div>
         <h1>Software anecdotes</h1>
         <Menu />
+        {notification && <p>{notification}</p>}
         <Routes>
           <Route path="/anecdotes/:id" element={<SingleAnecdote anecdotes={anecdotes} />} />
           <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
-          <Route path="/create" element={<CreateNew addNew={addNew} />} />
+          <Route
+            path="/create"
+            element={<CreateNew addNew={addNew} setNotification={setNotification} />}
+          />
           <Route path="/about" element={<About />} />
         </Routes>
         <Footer />
