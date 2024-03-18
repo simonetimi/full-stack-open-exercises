@@ -1,0 +1,67 @@
+{
+  "notes": [
+    {
+      "id": 1,
+      "content": "custom-hooks are awesome!"
+    },
+    {
+      "id": 2,
+      "content": "best feature ever <3"
+    },
+    {
+      "content": "Hello",
+      "id": 3
+    },
+    {
+      "content": "Bene questo funziona",
+      "id": 4
+    }
+  ],
+  "persons": [
+    {
+      "id": 1,
+      "name": "mluukkai",
+      "number": "040-5483923"
+    },
+    {
+      "id": 2,
+      "name": "hellas",
+      "number": "012-123123"
+    },
+    {
+      "name": "f4f",
+      "number": "4444",
+      "id": 3
+    },
+    {
+      "name": "fefef",
+      "number": "3333333",
+      "id": 4
+    },
+    {
+      "name": "fefefefe",
+      "number": "3333333",
+      "id": 5
+    },
+    {
+      "name": "fef",
+      "number": "44444",
+      "id": 6
+    },
+    {
+      "name": "f3f3",
+      "number": "4444",
+      "id": 7
+    },
+    {
+      "name": "f3ff",
+      "number": "44444",
+      "id": 8
+    },
+    {
+      "name": "YESSS WORKS",
+      "number": "446666666",
+      "id": 9
+    }
+  ]
+}
