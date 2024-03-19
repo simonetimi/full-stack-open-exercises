@@ -8,9 +8,11 @@ import NewBlog from './components/NewBlog';
 import { Notification } from './components/Notification';
 import { useContext } from 'react';
 import { NotificationContext } from './NotificationContext';
+import { UserContext } from './hooks/UserContext';
 import { useQueryClient, useQuery, useMutation } from 'react-query';
 
 const App = () => {
+  const { userState, dispatchUser } = useContext(UserContext);
   const { dispatchNotification } = useContext(NotificationContext);
   const addBlogMutation = useMutation(postBlog, {
     onSuccess: (data) => {
@@ -51,7 +53,6 @@ const App = () => {
   const updateBlogMutation = useMutation(updateBlog, {
     onSuccess: (data) => {
       queryClient.invalidateQueries('blogs');
-      // check notification here, it doesn't work
       dispatchNotification({
         type: 'set_message',
         payload: `You liked: ${data.title}`,
@@ -76,24 +77,16 @@ const App = () => {
   });
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [token, setToken] = useState();
-  const [userDet, setUserDet] = useState({
-    name: 'default',
-    username: 'default',
-  });
 
   const queryClient = useQueryClient();
   const query = useQuery('blogs', getAll);
 
   useEffect(() => {
     try {
-      const storedToken = localStorage.getItem('token');
-      if (storedToken) {
-        const sessionToken = JSON.parse(storedToken);
-        const details = localStorage.getItem('userDetails');
-        const parsedDetails = JSON.parse(details);
-        setUserDet(parsedDetails);
-        setToken(sessionToken);
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        const userDetails = JSON.parse(savedUser);
+        dispatchUser({ type: 'set_user', payload: userDetails });
       }
     } catch (error) {
       dispatchNotification({
@@ -113,22 +106,14 @@ const App = () => {
         username,
         password,
       });
-      const sessionToken = response.data.token;
-      setToken(sessionToken);
-      setUserDet({
+      const responseUser = {
         name: response.data.name,
         username: response.data.username,
         id: response.data.id,
-      });
-      localStorage.setItem('token', JSON.stringify(sessionToken));
-      localStorage.setItem(
-        'userDetails',
-        JSON.stringify({
-          name: response.data.name,
-          username: response.data.username,
-          id: response.data.id,
-        }),
-      );
+        token: response.data.token,
+      };
+      dispatchUser({ type: 'set_user', payload: responseUser });
+      localStorage.setItem('user', JSON.stringify(responseUser));
     } catch (error) {
       dispatchNotification({
         type: 'set_message',
@@ -156,6 +141,7 @@ const App = () => {
 
   const handleOnLogout = () => {
     localStorage.clear();
+    dispatchUser({ type: 'clear_user' });
     location.reload();
   };
 
@@ -166,9 +152,9 @@ const App = () => {
   return (
     <>
       <Notification />
-      {token ? (
+      {userState.token ? (
         <div style={{ margin: '4px' }}>
-          <p>{userDet.name} logged in</p>
+          <p>{userState.name} logged in</p>
           <button type="text" onClick={handleOnLogout}>
             logout
           </button>
@@ -176,20 +162,20 @@ const App = () => {
           <button onClick={handleOnSort}>sort by likes</button>
           {query.data.map((blog) => (
             <Blog
-              username={userDet.username}
+              username={userState.username}
               key={blog.id}
               blog={blog}
               updateBlogMutation={updateBlogMutation}
               deleteBlogMutation={deleteBlogMutation}
               blogs={query.data}
-              token={token}
+              token={userState.token}
             />
           ))}
           <div style={{ marginTop: '20px' }}>
             <Toggable buttonLabel={'add new blog'}>
               <NewBlog
-                userId={userDet.id}
-                token={token}
+                userId={userState.id}
+                token={userState.token}
                 addBlogMutation={addBlogMutation}
                 deleteBlogMutation={deleteBlogMutation}
               />
