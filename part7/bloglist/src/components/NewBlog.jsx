@@ -1,15 +1,11 @@
 import { useState } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import { useContext } from 'react';
+import { NotificationContext } from '../NotificationContext';
 
-const NewBlog = ({
-  token,
-  setBlogs,
-  setMessage,
-  blogs,
-  userId,
-  submitForm,
-}) => {
+const NewBlog = ({ token, setBlogs, blogs, userId, submitForm }) => {
+  const { dispatchNotification } = useContext(NotificationContext);
   const [newBlog, setNewBlog] = useState({
     title: '',
     author: '',
@@ -33,12 +29,22 @@ const NewBlog = ({
         },
       );
       setBlogs([...blogs, response.data]);
-      setMessage('Blog submitted successfully');
+      dispatchNotification({
+        type: 'set_message',
+        payload: 'Blog submitted successfully',
+      });
       setTimeout(() => {
-        setMessage('');
+        dispatchNotification({
+          type: 'clear',
+        });
       }, 3000);
     } catch (error) {
-      setMessage(error.message);
+      dispatchNotification({ type: 'set_message', payload: error });
+      setTimeout(() => {
+        dispatchNotification({
+          type: 'clear',
+        });
+      }, 3000);
     }
   };
 

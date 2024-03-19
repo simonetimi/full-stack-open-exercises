@@ -1,5 +1,7 @@
 import Togglable from './Toggable';
 import axios from 'axios';
+import { useContext } from 'react';
+import { NotificationContext } from '../NotificationContext';
 
 const style = {
   padding: '4px',
@@ -8,15 +10,8 @@ const style = {
   borderRadius: '12px',
 };
 
-const Blog = ({
-  blog,
-  blogs,
-  setBlogs,
-  token,
-  setMessage,
-  username,
-  updateLikes,
-}) => {
+const Blog = ({ blog, blogs, setBlogs, token, username, updateLikes }) => {
+  const { dispatchNotification } = useContext(NotificationContext);
   const handleOnUpdateLikes = async () => {
     try {
       const newBlog = { ...blog, likes: blog.likes + 1 };
@@ -28,11 +23,27 @@ const Blog = ({
       newBlogs[blogToUpdateIndex] = newBlog;
       setBlogs(newBlogs);
       blog.likes += 1;
-    } catch (error) {
-      setMessage(error.message);
+      dispatchNotification({
+        type: 'set_message',
+        payload: `You liked: ${newBlog.title}`,
+      });
       setTimeout(() => {
-        setMessage('');
+        dispatchNotification({
+          type: 'clear',
+        });
       }, 3000);
+    } catch (error) {
+      dispatchNotification({
+        type: 'set_message',
+        payload: error.message,
+      });
+      setTimeout(
+        () =>
+          dispatchNotification({
+            type: 'clear',
+          }),
+        3000,
+      );
     }
   };
 
@@ -46,6 +57,15 @@ const Blog = ({
     const blogToDeleteIndex = blogs.findIndex((obj) => obj.id === blog.id);
     const newBlogs = blogs.toSpliced(blogToDeleteIndex, 1);
     setBlogs(newBlogs);
+    dispatchNotification({
+      type: 'set_message',
+      payload: 'Blog deleted successfully',
+    });
+    setTimeout(() => {
+      dispatchNotification({
+        type: 'clear',
+      });
+    }, 3000);
   };
 
   return (

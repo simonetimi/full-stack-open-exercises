@@ -5,12 +5,15 @@ import axios from 'axios';
 import { Login } from './components/Login';
 import Toggable from './components/Toggable';
 import NewBlog from './components/NewBlog';
+import { Notification } from './components/Notification';
+import { useContext } from 'react';
+import { NotificationContext } from './NotificationContext';
 
 const App = () => {
+  const { dispatchNotification } = useContext(NotificationContext);
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
   const [token, setToken] = useState();
   const [userDet, setUserDet] = useState({
     name: 'default',
@@ -29,10 +32,13 @@ const App = () => {
       }
       blogService.getAll().then((blogs) => setBlogs(blogs));
     } catch (error) {
-      setMessage(error.message);
-      setTimeout(() => {
-        setMessage('');
-      }, 3000);
+      dispatchNotification({
+        type: 'set_message',
+        payload: error.message,
+      });
+      dispatchNotification({
+        type: 'clear',
+      });
       return;
     }
   }, []);
@@ -60,10 +66,13 @@ const App = () => {
         }),
       );
     } catch (error) {
-      setMessage(error.message);
-      setTimeout(() => {
-        setMessage('');
-      }, 3000);
+      dispatchNotification({
+        type: 'set_message',
+        payload: error.message,
+      });
+      dispatchNotification({
+        type: 'clear',
+      });
       return;
     }
   };
@@ -88,11 +97,7 @@ const App = () => {
 
   return (
     <>
-      {message !== '' ? (
-        <div className="message">
-          <p>{message}</p>
-        </div>
-      ) : null}
+      <Notification />
       {token ? (
         <div style={{ margin: '4px' }}>
           <p>{userDet.name} logged in</p>
@@ -109,7 +114,6 @@ const App = () => {
               blogs={blogs}
               setBlogs={setBlogs}
               token={token}
-              setMessage={setMessage}
             />
           ))}
           <div style={{ marginTop: '20px' }}>
@@ -117,7 +121,6 @@ const App = () => {
               <NewBlog
                 userId={userDet.id}
                 token={token}
-                setMessage={setMessage}
                 setBlogs={setBlogs}
                 blogs={blogs}
               />
