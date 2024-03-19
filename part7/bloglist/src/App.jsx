@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Blog from './components/Blog';
-import blogService from './services/blogs';
+import { getAll, postBlog, updateBlog, deleteBlog } from './services/blogs';
 import axios from 'axios';
 import { Login } from './components/Login';
 import Toggable from './components/Toggable';
@@ -8,10 +8,72 @@ import NewBlog from './components/NewBlog';
 import { Notification } from './components/Notification';
 import { useContext } from 'react';
 import { NotificationContext } from './NotificationContext';
+import { useQueryClient, useQuery, useMutation } from 'react-query';
 
 const App = () => {
   const { dispatchNotification } = useContext(NotificationContext);
-  const [blogs, setBlogs] = useState([]);
+  const addBlogMutation = useMutation(postBlog, {
+    onSuccess: (data) => {
+      queryClient.invalidateQueries('blogs');
+      dispatchNotification({
+        type: 'set_message',
+        payload: 'Blog submitted successfully',
+      });
+      setTimeout(() => {
+        dispatchNotification({
+          type: 'clear',
+        });
+      }, 3000);
+    },
+    onError: (err) => {
+      dispatchNotification({ type: 'set_message', payload: err });
+      setTimeout(() => {
+        dispatchNotification({
+          type: 'clear',
+        });
+      }, 3000);
+    },
+  });
+  const deleteBlogMutation = useMutation(deleteBlog, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('blogs');
+      dispatchNotification({
+        type: 'set_message',
+        payload: 'Blog deleted successfully',
+      });
+      setTimeout(() => {
+        dispatchNotification({
+          type: 'clear',
+        });
+      }, 3000);
+    },
+  });
+  const updateBlogMutation = useMutation(updateBlog, {
+    onSuccess: (data) => {
+      queryClient.invalidateQueries('blogs');
+      // check notification here, it doesn't work
+      dispatchNotification({
+        type: 'set_message',
+        payload: `You liked: ${data.title}`,
+      });
+      setTimeout(() => {
+        dispatchNotification({
+          type: 'clear',
+        });
+      }, 3000);
+    },
+    onError: (err) => {
+      dispatchNotification({ type: 'set_message', payload: err });
+      setTimeout(() => {
+        dispatchNotification({
+          type: 'clear',
+        });
+      }, 3000);
+    },
+  });
+  const sortBlogsMutation = useMutation((sortedBlogs) => {
+    queryClient.setQueryData('blogs', sortedBlogs);
+  });
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [token, setToken] = useState();
@@ -19,6 +81,9 @@ const App = () => {
     name: 'default',
     username: 'default',
   });
+
+  const queryClient = useQueryClient();
+  const query = useQuery('blogs', getAll);
 
   useEffect(() => {
     try {
@@ -30,7 +95,6 @@ const App = () => {
         setUserDet(parsedDetails);
         setToken(sessionToken);
       }
-      blogService.getAll().then((blogs) => setBlogs(blogs));
     } catch (error) {
       dispatchNotification({
         type: 'set_message',
@@ -78,8 +142,8 @@ const App = () => {
   };
 
   const handleOnSort = () => {
-    const sortedBlogs = blogs.toSorted((a, b) => b.likes - a.likes);
-    setBlogs(sortedBlogs);
+    const sortedBlogs = query.data.toSorted((a, b) => b.likes - a.likes);
+    sortBlogsMutation.mutate(sortedBlogs);
   };
 
   const handleOnChangeUsername = (event) => {
@@ -95,6 +159,10 @@ const App = () => {
     location.reload();
   };
 
+  if (!query.data) {
+    return <p>Loading...</p>;
+  }
+
   return (
     <>
       <Notification />
@@ -106,13 +174,14 @@ const App = () => {
           </button>
           <h2>Blogs</h2>
           <button onClick={handleOnSort}>sort by likes</button>
-          {blogs.map((blog) => (
+          {query.data.map((blog) => (
             <Blog
               username={userDet.username}
               key={blog.id}
               blog={blog}
-              blogs={blogs}
-              setBlogs={setBlogs}
+              updateBlogMutation={updateBlogMutation}
+              deleteBlogMutation={deleteBlogMutation}
+              blogs={query.data}
               token={token}
             />
           ))}
@@ -121,8 +190,8 @@ const App = () => {
               <NewBlog
                 userId={userDet.id}
                 token={token}
-                setBlogs={setBlogs}
-                blogs={blogs}
+                addBlogMutation={addBlogMutation}
+                deleteBlogMutation={deleteBlogMutation}
               />
             </Toggable>
           </div>

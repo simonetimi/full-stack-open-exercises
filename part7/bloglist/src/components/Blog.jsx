@@ -1,7 +1,4 @@
 import Togglable from './Toggable';
-import axios from 'axios';
-import { useContext } from 'react';
-import { NotificationContext } from '../NotificationContext';
 
 const style = {
   padding: '4px',
@@ -10,62 +7,23 @@ const style = {
   borderRadius: '12px',
 };
 
-const Blog = ({ blog, blogs, setBlogs, token, username, updateLikes }) => {
-  const { dispatchNotification } = useContext(NotificationContext);
-  const handleOnUpdateLikes = async () => {
-    try {
-      const newBlog = { ...blog, likes: blog.likes + 1 };
-      await axios.put(`http://localhost:3001/api/blogs/${blog.id}`, newBlog, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const blogToUpdateIndex = blogs.findIndex((obj) => obj.id === newBlog.id);
-      const newBlogs = [...blogs];
-      newBlogs[blogToUpdateIndex] = newBlog;
-      setBlogs(newBlogs);
-      blog.likes += 1;
-      dispatchNotification({
-        type: 'set_message',
-        payload: `You liked: ${newBlog.title}`,
-      });
-      setTimeout(() => {
-        dispatchNotification({
-          type: 'clear',
-        });
-      }, 3000);
-    } catch (error) {
-      dispatchNotification({
-        type: 'set_message',
-        payload: error.message,
-      });
-      setTimeout(
-        () =>
-          dispatchNotification({
-            type: 'clear',
-          }),
-        3000,
-      );
-    }
+const Blog = ({
+  blog,
+  token,
+  username,
+  updateBlogMutation,
+  deleteBlogMutation,
+}) => {
+  const handleOnUpdateLikes = () => {
+    const updatedBlog = { ...blog, likes: blog.likes + 1 };
+    updateBlogMutation.mutate({ updatedBlog, token });
   };
 
   const handleOnDelete = async () => {
     if (!window.confirm('Are you sure you wanna delete the blog entry?')) {
       return;
     }
-    await axios.delete(`http://localhost:3001/api/blogs/${blog.id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const blogToDeleteIndex = blogs.findIndex((obj) => obj.id === blog.id);
-    const newBlogs = blogs.toSpliced(blogToDeleteIndex, 1);
-    setBlogs(newBlogs);
-    dispatchNotification({
-      type: 'set_message',
-      payload: 'Blog deleted successfully',
-    });
-    setTimeout(() => {
-      dispatchNotification({
-        type: 'clear',
-      });
-    }, 3000);
+    deleteBlogMutation.mutate({ blog, token });
   };
 
   return (
@@ -75,7 +33,7 @@ const Blog = ({ blog, blogs, setBlogs, token, username, updateLikes }) => {
         <p>Author: {blog.author}</p>
         {blog.url ? <p id="url">Blog url: {blog.url}</p> : null}
         {blog.likes > 0 ? <p id="likes">Likes: {blog.likes}</p> : null}{' '}
-        <button onClick={updateLikes || handleOnUpdateLikes}>like</button>
+        <button onClick={handleOnUpdateLikes}>like</button>
         <p>Added by: {blog.user.username}</p>
         {username === blog.user.username ? (
           <button
