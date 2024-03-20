@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom';
+import { useRef } from 'react';
 
 const style = {
   padding: '4px',
@@ -13,12 +14,20 @@ const Blog = ({
   username,
   updateBlogMutation,
   deleteBlogMutation,
+  addCommentMutation,
 }) => {
+  const commentRef = useRef(null);
   const id = useParams().id;
   const blog = blogs.find((blog) => blog.id === id);
   const handleOnUpdateLikes = () => {
     const updatedBlog = { ...blog, likes: blog.likes + 1 };
     updateBlogMutation.mutate({ updatedBlog, token });
+  };
+
+  const handleOnAddComment = (event) => {
+    event.preventDefault();
+    const comment = commentRef.current.value;
+    addCommentMutation.mutate({ comment, id });
   };
 
   const handleOnDelete = async () => {
@@ -48,6 +57,10 @@ const Blog = ({
           delete
         </button>
       ) : null}
+      <form onSubmit={handleOnAddComment}>
+        <input ref={commentRef} type="text" />
+        <button type="submit">add</button>
+      </form>
       {blog.comments.length > 0 ? (
         <ul id="comments">
           <h3>Comments:</h3>

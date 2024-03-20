@@ -44,3 +44,11 @@ export const getComments = async (data) => {
   );
   return response.data;
 };
+
+export const postComment = async (data) => {
+  const response = await axios.post(
+    `http://localhost:3001/api/blogs/${data.id}/comments`,
+    { comment: data.comment },
+  );
+  return response.data;
+};

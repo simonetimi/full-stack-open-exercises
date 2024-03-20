@@ -114,7 +114,7 @@ blogsRouter.get('/:id/comments/', async (request, response, next) => {
   }
 });
 
-blogsRouter.put('/:id/comments', async (request, response, next) => {
+blogsRouter.post('/:id/comments', async (request, response, next) => {
   try {
     const id = request.params.id;
     const blog = await Blog.findById(id);

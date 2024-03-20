@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'react';
 import Blog from './components/Blog';
-import { getAll, postBlog, updateBlog, deleteBlog } from './services/blogs';
+import {
+  getAll,
+  postBlog,
+  updateBlog,
+  deleteBlog,
+  postComment,
+} from './services/blogs';
 import { getAllUsers } from './services/users';
 import axios from 'axios';
 import { Login } from './components/Login';
@@ -33,6 +39,20 @@ const App = () => {
     },
     onError: (err) => {
       dispatchNotification({ type: 'set_message', payload: err });
+      setTimeout(() => {
+        dispatchNotification({
+          type: 'clear',
+        });
+      }, 3000);
+    },
+  });
+  const addCommentMutation = useMutation(postComment, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('blogs');
+      dispatchNotification({
+        type: 'set_message',
+        payload: 'Comment added!',
+      });
       setTimeout(() => {
         dispatchNotification({
           type: 'clear',
@@ -181,6 +201,7 @@ const App = () => {
                     username={userState.username}
                     updateBlogMutation={updateBlogMutation}
                     deleteBlogMutation={deleteBlogMutation}
+                    addCommentMutation={addCommentMutation}
                     token={userState.token}
                   />
                 }
