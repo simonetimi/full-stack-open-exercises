@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import Blog from './components/Blog';
 import { getAll, postBlog, updateBlog, deleteBlog } from './services/blogs';
+import { getAllUsers } from './services/users';
 import axios from 'axios';
 import { Login } from './components/Login';
 import Toggable from './components/Toggable';
 import NewBlog from './components/NewBlog';
 import { Notification } from './components/Notification';
+import ShowUsers from './components/ShowUsers';
 import { useContext } from 'react';
 import { NotificationContext } from './NotificationContext';
 import { UserContext } from './hooks/UserContext';
@@ -80,6 +82,7 @@ const App = () => {
 
   const queryClient = useQueryClient();
   const query = useQuery('blogs', getAll);
+  const queryUsers = useQuery('users', getAllUsers);
 
   useEffect(() => {
     try {
@@ -145,7 +148,7 @@ const App = () => {
     location.reload();
   };
 
-  if (!query.data) {
+  if (!query.data || !queryUsers.data) {
     return <p>Loading...</p>;
   }
 
@@ -171,6 +174,23 @@ const App = () => {
               token={userState.token}
             />
           ))}
+          <section
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '150px 50px',
+              gridTemplateRows: '50px auto',
+            }}
+          >
+            <h2 style={{ gridColumn: '1 / 3' }}>Users</h2>
+            <p style={{ gridColumn: '2 / 3' }}>Blogs: </p>
+            {queryUsers.data.map((user) => (
+              <ShowUsers
+                username={user.username}
+                key={user.id}
+                blogLength={user.blogs.length}
+              />
+            ))}
+          </section>
           <div style={{ marginTop: '20px' }}>
             <Toggable buttonLabel={'add new blog'}>
               <NewBlog
