@@ -6,12 +6,14 @@ import axios from 'axios';
 import { Login } from './components/Login';
 import Toggable from './components/Toggable';
 import NewBlog from './components/NewBlog';
+import UserDet from './components/UserDet';
 import { Notification } from './components/Notification';
 import ShowUsers from './components/ShowUsers';
 import { useContext } from 'react';
 import { NotificationContext } from './NotificationContext';
 import { UserContext } from './hooks/UserContext';
 import { useQueryClient, useQuery, useMutation } from 'react-query';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
 const App = () => {
   const { userState, dispatchUser } = useContext(UserContext);
@@ -153,55 +155,86 @@ const App = () => {
   }
 
   return (
-    <>
+    <Router>
       <Notification />
       {userState.token ? (
-        <div style={{ margin: '4px' }}>
-          <p>{userState.name} logged in</p>
-          <button type="text" onClick={handleOnLogout}>
-            logout
-          </button>
-          <h2>Blogs</h2>
-          <button onClick={handleOnSort}>sort by likes</button>
-          {query.data.map((blog) => (
-            <Blog
-              username={userState.username}
-              key={blog.id}
-              blog={blog}
-              updateBlogMutation={updateBlogMutation}
-              deleteBlogMutation={deleteBlogMutation}
-              blogs={query.data}
-              token={userState.token}
-            />
-          ))}
-          <section
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '150px 50px',
-              gridTemplateRows: '50px auto',
-            }}
-          >
-            <h2 style={{ gridColumn: '1 / 3' }}>Users</h2>
-            <p style={{ gridColumn: '2 / 3' }}>Blogs: </p>
-            {queryUsers.data.map((user) => (
-              <ShowUsers
-                username={user.username}
-                key={user.id}
-                blogLength={user.blogs.length}
-              />
-            ))}
-          </section>
-          <div style={{ marginTop: '20px' }}>
-            <Toggable buttonLabel={'add new blog'}>
-              <NewBlog
-                userId={userState.id}
-                token={userState.token}
-                addBlogMutation={addBlogMutation}
-                deleteBlogMutation={deleteBlogMutation}
-              />
-            </Toggable>
+        <>
+          <div>
+            <Link style={{ padding: '10px' }} to="/">
+              Blogs
+            </Link>
+            <Link style={{ padding: '10px' }} to="/users">
+              Users
+            </Link>
           </div>
-        </div>
+          <div style={{ margin: '4px' }}>
+            <p>{userState.name} logged in</p>
+            <button type="text" onClick={handleOnLogout}>
+              logout
+            </button>
+            <Routes>
+              <Route
+                path="/users/:id"
+                element={<UserDet users={queryUsers.data} />}
+              />
+              <Route
+                path="/"
+                element={
+                  <>
+                    {' '}
+                    <h2>Blogs</h2>
+                    <button onClick={handleOnSort}>sort by likes</button>
+                    {query.data.map((blog) => (
+                      <Blog
+                        username={userState.username}
+                        key={blog.id}
+                        blog={blog}
+                        updateBlogMutation={updateBlogMutation}
+                        deleteBlogMutation={deleteBlogMutation}
+                        blogs={query.data}
+                        token={userState.token}
+                      />
+                    ))}
+                    <div style={{ marginTop: '20px' }}>
+                      <Toggable buttonLabel={'add new blog'}>
+                        <NewBlog
+                          userId={userState.id}
+                          token={userState.token}
+                          addBlogMutation={addBlogMutation}
+                          deleteBlogMutation={deleteBlogMutation}
+                        />
+                      </Toggable>
+                    </div>
+                  </>
+                }
+              />
+              ;
+              <Route
+                path="/users"
+                element={
+                  <section
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '130px 50px',
+                      gridTemplateRows: '30px auto',
+                    }}
+                  >
+                    <h2 style={{ gridColumn: '1 / 3' }}>Users</h2>
+                    <p style={{ gridColumn: '2 / 3' }}>Blogs: </p>
+                    {queryUsers.data.map((user) => (
+                      <ShowUsers
+                        username={user.username}
+                        userId={user._id}
+                        key={user._id}
+                        blogLength={user.blogs.length}
+                      />
+                    ))}
+                  </section>
+                }
+              />
+            </Routes>
+          </div>
+        </>
       ) : (
         <Login
           username={username}
@@ -211,7 +244,7 @@ const App = () => {
           handleOnLogin={handleOnLogin}
         />
       )}
-    </>
+    </Router>
   );
 };
 

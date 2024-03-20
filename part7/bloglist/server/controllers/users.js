@@ -10,9 +10,13 @@ usersRouter.use(express.json());
 usersRouter.use(cors());
 
 const userSchema = object({
-  username: string().required().min(3, 'Username should be at least 3 characters long'),
+  username: string()
+    .required()
+    .min(3, 'Username should be at least 3 characters long'),
   name: string().required(),
-  password: string().required().min(3, 'Password should be at least 3 characters long'),
+  password: string()
+    .required()
+    .min(3, 'Password should be at least 3 characters long'),
 });
 
 usersRouter.get('/', async (request, response, next) => {
