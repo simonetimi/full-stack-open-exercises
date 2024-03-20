@@ -1,4 +1,4 @@
-import Togglable from './Toggable';
+import { useParams } from 'react-router-dom';
 
 const style = {
   padding: '4px',
@@ -8,12 +8,14 @@ const style = {
 };
 
 const Blog = ({
-  blog,
+  blogs,
   token,
   username,
   updateBlogMutation,
   deleteBlogMutation,
 }) => {
+  const id = useParams().id;
+  const blog = blogs.find((blog) => blog.id === id);
   const handleOnUpdateLikes = () => {
     const updatedBlog = { ...blog, likes: blog.likes + 1 };
     updateBlogMutation.mutate({ updatedBlog, token });
@@ -29,25 +31,23 @@ const Blog = ({
   return (
     <div style={style} className="blog">
       {blog.title}
-      <Togglable buttonLabel={'Show more'}>
-        <p>Author: {blog.author}</p>
-        {blog.url ? <p id="url">Blog url: {blog.url}</p> : null}
-        {blog.likes > 0 ? <p id="likes">Likes: {blog.likes}</p> : null}{' '}
-        <button onClick={handleOnUpdateLikes}>like</button>
-        <p>Added by: {blog.user.username}</p>
-        {username === blog.user.username ? (
-          <button
-            onClick={handleOnDelete}
-            style={{
-              backgroundColor: 'red',
-              borderRadius: '6px',
-              color: 'white',
-            }}
-          >
-            delete
-          </button>
-        ) : null}
-      </Togglable>
+      <p>Author: {blog.author}</p>
+      {blog.url ? <p id="url">Blog url: {blog.url}</p> : null}
+      {blog.likes > 0 ? <p id="likes">Likes: {blog.likes}</p> : null}{' '}
+      <button onClick={handleOnUpdateLikes}>like</button>
+      <p>Added by: {blog.user.username}</p>
+      {username === blog.user.username ? (
+        <button
+          onClick={handleOnDelete}
+          style={{
+            backgroundColor: 'red',
+            borderRadius: '6px',
+            color: 'white',
+          }}
+        >
+          delete
+        </button>
+      ) : null}
     </div>
   );
 };

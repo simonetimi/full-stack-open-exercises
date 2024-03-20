@@ -174,6 +174,18 @@ const App = () => {
             </button>
             <Routes>
               <Route
+                path="/blogs/:id"
+                element={
+                  <Blog
+                    blogs={query.data}
+                    username={userState.username}
+                    updateBlogMutation={updateBlogMutation}
+                    deleteBlogMutation={deleteBlogMutation}
+                    token={userState.token}
+                  />
+                }
+              />
+              <Route
                 path="/users/:id"
                 element={<UserDet users={queryUsers.data} />}
               />
@@ -181,20 +193,15 @@ const App = () => {
                 path="/"
                 element={
                   <>
-                    {' '}
                     <h2>Blogs</h2>
                     <button onClick={handleOnSort}>sort by likes</button>
-                    {query.data.map((blog) => (
-                      <Blog
-                        username={userState.username}
-                        key={blog.id}
-                        blog={blog}
-                        updateBlogMutation={updateBlogMutation}
-                        deleteBlogMutation={deleteBlogMutation}
-                        blogs={query.data}
-                        token={userState.token}
-                      />
-                    ))}
+                    <ul>
+                      {query.data.map((blog) => (
+                        <li key={blog.id}>
+                          <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+                        </li>
+                      ))}
+                    </ul>
                     <div style={{ marginTop: '20px' }}>
                       <Toggable buttonLabel={'add new blog'}>
                         <NewBlog
@@ -208,7 +215,6 @@ const App = () => {
                   </>
                 }
               />
-              ;
               <Route
                 path="/users"
                 element={
