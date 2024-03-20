@@ -37,3 +37,10 @@ export const deleteBlog = async (data) => {
   );
   return response.data;
 };
+
+export const getComments = async (data) => {
+  const response = await axios.get(
+    `http://localhost:3001/api/blogs/${data.blog.id}/comments`,
+  );
+  return response.data;
+};

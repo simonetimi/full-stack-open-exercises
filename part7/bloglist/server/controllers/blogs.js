@@ -102,4 +102,28 @@ blogsRouter.put('/:id', async (request, response, next) => {
   }
 });
 
+// comments
+
+blogsRouter.get('/:id/comments/', async (request, response, next) => {
+  try {
+    const id = request.params.id;
+    const blog = await Blog.findById(id);
+    response.json(blog.comments);
+  } catch (error) {
+    next(error);
+  }
+});
+
+blogsRouter.put('/:id/comments', async (request, response, next) => {
+  try {
+    const id = request.params.id;
+    const blog = await Blog.findById(id);
+    blog.comments.push(request.body.comment);
+    const result = await blog.save();
+    response.status(201).json(result);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = blogsRouter;

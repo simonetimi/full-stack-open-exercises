@@ -48,6 +48,14 @@ const Blog = ({
           delete
         </button>
       ) : null}
+      {blog.comments.length > 0 ? (
+        <ul id="comments">
+          <h3>Comments:</h3>
+          {blog.comments.map((comment, index) => (
+            <li key={index}>{comment}</li>
+          ))}
+        </ul>
+      ) : null}{' '}
     </div>
   );
 };
