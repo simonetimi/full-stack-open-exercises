@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { Input, Button } from '@nextui-org/react';
 
 export const Login = ({
   username,
@@ -8,10 +9,10 @@ export const Login = ({
   handleOnLogin,
 }) => {
   return (
-    <div>
+    <div className="flex flex-col gap-5">
       <label htmlFor="username">
         Username:
-        <input
+        <Input
           id="username"
           type="text"
           minLength="3"
@@ -21,7 +22,7 @@ export const Login = ({
       </label>
       <label htmlFor="pass">
         Password:
-        <input
+        <Input
           id="pass"
           type="password"
           minLength="3"
@@ -29,9 +30,9 @@ export const Login = ({
           value={password}
         />
       </label>
-      <button type="button" onClick={handleOnLogin}>
+      <Button color="primary" type="button" onClick={handleOnLogin}>
         Login
-      </button>
+      </Button>
     </div>
   );
 };

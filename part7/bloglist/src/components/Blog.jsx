@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useRef } from 'react';
+import { Button, Input, Divider } from '@nextui-org/react';
 
 const style = {
   padding: '4px',
@@ -38,34 +39,44 @@ const Blog = ({
   };
 
   return (
-    <div style={style} className="blog">
-      {blog.title}
-      <p>Author: {blog.author}</p>
+    <div style={style} className="blog border-1 flex flex-col gap-2">
+      <h1 className="text-2xl">{blog.title}</h1>
+      <p className="text-xl">Author: {blog.author}</p>
       {blog.url ? <p id="url">Blog url: {blog.url}</p> : null}
       {blog.likes > 0 ? <p id="likes">Likes: {blog.likes}</p> : null}{' '}
-      <button onClick={handleOnUpdateLikes}>like</button>
-      <p>Added by: {blog.user.username}</p>
+      <Button
+        onClick={handleOnUpdateLikes}
+        color="primary"
+        className="w-10 h-6"
+      >
+        like
+      </Button>
+      <p className="text-slate-500">Added by: {blog.user.username}</p>
       {username === blog.user.username ? (
-        <button
-          onClick={handleOnDelete}
-          style={{
-            backgroundColor: 'red',
-            borderRadius: '6px',
-            color: 'white',
-          }}
-        >
+        <Button onClick={handleOnDelete} color="danger" className="w-10 h-10">
           delete
-        </button>
+        </Button>
       ) : null}
+      <h2 className="text-xl mt-6">Comments</h2>
       <form onSubmit={handleOnAddComment}>
-        <input ref={commentRef} type="text" />
-        <button type="submit">add</button>
+        <Input
+          ref={commentRef}
+          type="text"
+          minLength={1}
+          isRequired
+          className="w-2/3"
+        />
+        <Button type="submit" className="w-8 h-8 mt-3" color="primary">
+          Add
+        </Button>
       </form>
       {blog.comments.length > 0 ? (
         <ul id="comments">
-          <h3>Comments:</h3>
+          <h3 className="text-lg">Last comments:</h3>
           {blog.comments.map((comment, index) => (
-            <li key={index}>{comment}</li>
+            <li className="p-1 border-1 rounded-md my-2" key={index}>
+              {comment}
+            </li>
           ))}
         </ul>
       ) : null}{' '}

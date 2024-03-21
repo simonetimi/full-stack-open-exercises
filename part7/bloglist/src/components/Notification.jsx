@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import { NotificationContext } from '../NotificationContext';
+import { Snippet } from '@nextui-org/react';
 
 export const Notification = () => {
   const { message } = useContext(NotificationContext);
@@ -7,8 +8,8 @@ export const Notification = () => {
     return null;
   }
   return (
-    <div className="message">
-      <p>{message}</p>
-    </div>
+    <Snippet hideCopyButton color="success" symbol="">
+      {message}
+    </Snippet>
   );
 };

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { Input, Button, ModalFooter } from '@nextui-org/react';
 
-const NewBlog = ({ token, addBlogMutation, userId, submitForm }) => {
+const NewBlog = ({ token, addBlogMutation, userId, submitForm, onClose }) => {
   const [newBlog, setNewBlog] = useState({
     title: '',
     author: '',
@@ -24,24 +25,47 @@ const NewBlog = ({ token, addBlogMutation, userId, submitForm }) => {
 
   return (
     <>
-      <h2>Insert new blog</h2>
       <form
+        className="flex flex-col gap-4 my-4"
         onSubmit={
           submitForm ? () => submitForm(newBlog) : handleOnSubmitNewBlog
         }
       >
         <label>
           Title:{' '}
-          <input type="text" name="title" onChange={handleOnChange}></input>
+          <Input
+            className="w-60"
+            type="text"
+            name="title"
+            onChange={handleOnChange}
+          ></Input>
         </label>
         <label>
           Author:{' '}
-          <input type="text" name="author" onChange={handleOnChange}></input>
+          <Input
+            className="w-60"
+            type="text"
+            name="author"
+            onChange={handleOnChange}
+          ></Input>
         </label>
         <label>
-          Url: <input type="text" name="url" onChange={handleOnChange}></input>
+          Url:{' '}
+          <Input
+            className="w-60"
+            type="text"
+            name="url"
+            onChange={handleOnChange}
+          ></Input>
         </label>
-        <button type="submit">New blog</button>
+        <ModalFooter>
+          <Button color="danger" variant="light" onPress={onClose}>
+            Close
+          </Button>
+          <Button color="primary" onPress={onClose} type="submit">
+            Add New Blog
+          </Button>
+        </ModalFooter>
       </form>
     </>
   );

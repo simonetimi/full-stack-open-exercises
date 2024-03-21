@@ -20,9 +20,22 @@ import { NotificationContext } from './NotificationContext';
 import { UserContext } from './hooks/UserContext';
 import { useQueryClient, useQuery, useMutation } from 'react-query';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import {
+  Navbar,
+  NavbarContent,
+  NavbarItem,
+  Button,
+  Chip,
+  useDisclosure,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+} from '@nextui-org/react';
 
 const App = () => {
   const { userState, dispatchUser } = useContext(UserContext);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { dispatchNotification } = useContext(NotificationContext);
   const addBlogMutation = useMutation(postBlog, {
     onSuccess: (data) => {
@@ -179,19 +192,28 @@ const App = () => {
       <Notification />
       {userState.token ? (
         <>
-          <div>
-            <Link style={{ padding: '10px' }} to="/">
-              Blogs
-            </Link>
-            <Link style={{ padding: '10px' }} to="/users">
-              Users
-            </Link>
-          </div>
-          <div style={{ margin: '4px' }}>
-            <p>{userState.name} logged in</p>
-            <button type="text" onClick={handleOnLogout}>
-              logout
-            </button>
+          <Navbar isBordered className="w-screen">
+            <NavbarContent justify="start"></NavbarContent>
+            <NavbarContent justify="center">
+              <NavbarItem>
+                <Link style={{ padding: '10px' }} to="/">
+                  Blogs
+                </Link>
+              </NavbarItem>
+              <NavbarItem>
+                <Link style={{ padding: '10px' }} to="/users">
+                  Users
+                </Link>
+              </NavbarItem>
+            </NavbarContent>
+            <NavbarContent justify="end">
+              <Chip color="primary">{userState.name} logged in</Chip>
+              <Button type="text" onClick={handleOnLogout} className="h-6">
+                logout
+              </Button>
+            </NavbarContent>
+          </Navbar>
+          <div className="m-4 flex flex-col gap-4 w-1/2">
             <Routes>
               <Route
                 path="/blogs/:id"
@@ -214,24 +236,43 @@ const App = () => {
                 path="/"
                 element={
                   <>
-                    <h2>Blogs</h2>
-                    <button onClick={handleOnSort}>sort by likes</button>
-                    <ul>
+                    <h2 className="text-2xl underline text-center">Blogs</h2>
+                    <Button onClick={handleOnSort} className="h-6 w-24">
+                      sort by likes
+                    </Button>
+                    <ul className="flex flex-col gap-2">
                       {query.data.map((blog) => (
-                        <li key={blog.id}>
-                          <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
-                        </li>
+                        <Link key={blog.id} to={`/blogs/${blog.id}`}>
+                          <li className="border-1 rounded-md p-2 hover:transition-transform hover:scale-105">
+                            {blog.title}
+                          </li>
+                        </Link>
                       ))}
                     </ul>
                     <div style={{ marginTop: '20px' }}>
-                      <Toggable buttonLabel={'add new blog'}>
-                        <NewBlog
-                          userId={userState.id}
-                          token={userState.token}
-                          addBlogMutation={addBlogMutation}
-                          deleteBlogMutation={deleteBlogMutation}
-                        />
-                      </Toggable>
+                      <>
+                        <Button onPress={onOpen}>Add New Blog</Button>
+                        <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+                          <ModalContent>
+                            {(onClose) => (
+                              <>
+                                <ModalHeader className="flex flex-col gap-1">
+                                  Add New Blog
+                                </ModalHeader>
+                                <ModalBody>
+                                  <NewBlog
+                                    userId={userState.id}
+                                    token={userState.token}
+                                    addBlogMutation={addBlogMutation}
+                                    deleteBlogMutation={deleteBlogMutation}
+                                    onClose={onClose}
+                                  />
+                                </ModalBody>
+                              </>
+                            )}
+                          </ModalContent>
+                        </Modal>
+                      </>
                     </div>
                   </>
                 }
@@ -239,23 +280,18 @@ const App = () => {
               <Route
                 path="/users"
                 element={
-                  <section
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '130px 50px',
-                      gridTemplateRows: '30px auto',
-                    }}
-                  >
-                    <h2 style={{ gridColumn: '1 / 3' }}>Users</h2>
-                    <p style={{ gridColumn: '2 / 3' }}>Blogs: </p>
-                    {queryUsers.data.map((user) => (
-                      <ShowUsers
-                        username={user.username}
-                        userId={user._id}
-                        key={user._id}
-                        blogLength={user.blogs.length}
-                      />
-                    ))}
+                  <section className="border-1 rounded-md p-3 gap-5">
+                    <h2 className="text-2xl mb-5">Users</h2>
+                    <div className="flex flex-wrap p-2 gap-2">
+                      {queryUsers.data.map((user) => (
+                        <ShowUsers
+                          username={user.username}
+                          userId={user._id}
+                          key={user._id}
+                          blogLength={user.blogs.length}
+                        />
+                      ))}
+                    </div>
                   </section>
                 }
               />
