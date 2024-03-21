@@ -84,13 +84,21 @@ const typeDefs = `
     bookCount: Int
     authorCount: Int
     allBooks: [Book]!
+    allAuthors: [Author]!
   }
+
   type Book {
     title: String!
     published: Int
     author: String!
     id: String!
     genres: [String]
+  }
+
+  type Author {
+    name: String!
+    born: Int
+    bookCount: Int!
   }
 `;
 
@@ -99,6 +107,24 @@ const resolvers = {
     bookCount: () => books.length,
     authorCount: () => authors.length,
     allBooks: () => books,
+    allAuthors: () => {
+      return authors.map((author) => {
+        const count = books.reduce((accumulator, book) => {
+          return (
+            accumulator +
+            Object.values(book).filter((value) => {
+              if (Array.isArray(value) || typeof value === 'string') {
+                return value.includes(author.name);
+              }
+            }).length
+          );
+        }, 0);
+        return {
+          ...author,
+          bookCount: count,
+        };
+      });
+    },
   },
 };
 
