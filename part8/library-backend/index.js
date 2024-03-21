@@ -1,6 +1,7 @@
 const { ApolloServer } = require('@apollo/server');
 const { startStandaloneServer } = require('@apollo/server/standalone');
 const { gql } = require('graphql-tag');
+const { v4: uuidv4 } = require('uuid');
 
 let authors = [
   {
@@ -80,7 +81,7 @@ let books = [
   },
 ];
 
-const typeDefs = gql`
+const typeDefs = gql(`
   type Query {
     bookCount: Int
     authorCount: Int
@@ -93,7 +94,7 @@ const typeDefs = gql`
     published: Int
     author: String!
     id: String!
-    genres: [String]
+    genres: [String!]!
   }
 
   type Author {
@@ -101,7 +102,16 @@ const typeDefs = gql`
     born: Int
     bookCount: Int!
   }
-`;
+
+  type Mutation {
+    addBook(
+      title: String!
+      published: Int!
+      author: String!
+      genres: [String!]!
+      ): Book
+  }
+`);
 
 const resolvers = {
   Query: {
@@ -135,6 +145,13 @@ const resolvers = {
           bookCount: count,
         };
       });
+    },
+  },
+  Mutation: {
+    addBook: (root, args) => {
+      const book = { ...args, id: uuidv4() };
+      books.push(book);
+      return book;
     },
   },
 };
