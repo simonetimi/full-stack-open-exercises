@@ -3,13 +3,16 @@ import Authors from './components/Authors';
 import Books from './components/Books';
 import NewBook from './components/NewBook';
 import { useMutation, useQuery } from '@apollo/client';
-import { ALL_AUTHORS, ALL_BOOKS, ADD_BOOK } from './queries';
+import { ALL_AUTHORS, ALL_BOOKS, ADD_BOOK, EDIT_AUTHOR } from './queries';
 
 const App = () => {
   const authors = useQuery(ALL_AUTHORS);
   const books = useQuery(ALL_BOOKS);
   const [addBook] = useMutation(ADD_BOOK, {
     refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
+  });
+  const [editAuthor] = useMutation(EDIT_AUTHOR, {
+    refetchQueries: [{ query: ALL_AUTHORS }],
   });
   const [page, setPage] = useState('authors');
 
@@ -25,7 +28,11 @@ const App = () => {
         'Loading...'
       ) : (
         <main>
-          <Authors show={page === 'authors'} authors={authors.data.allAuthors} />
+          <Authors
+            show={page === 'authors'}
+            authors={authors.data.allAuthors}
+            editAuthor={editAuthor}
+          />
 
           <Books show={page === 'books'} books={books.data.allBooks} />
 
