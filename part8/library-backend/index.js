@@ -62,12 +62,27 @@ const typeDefs = gql(`
 `);
 
 const resolvers = {
+  Author: {
+    bookCount: async (author) => {
+      try {
+        const bookCount = await Book.countDocuments({ author: author._id });
+        return bookCount;
+      } catch (error) {
+        throw new GraphQLError(`Failed to fetch book count for author ${author.name}`, {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            error,
+          },
+        });
+      }
+    },
+  },
   Query: {
     me: (root, args, { user }) => {
       return user;
     },
-    bookCount: () => Book.collection.countDocuments(),
-    authorCount: () => Author.collection.countDocuments(),
+    bookCount: async () => await Book.collection.countDocuments(),
+    authorCount: async () => await Author.collection.countDocuments(),
     allBooks: async (root, args) => {
       try {
         // no arguments, finds all books
