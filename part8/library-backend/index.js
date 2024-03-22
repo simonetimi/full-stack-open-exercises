@@ -1,5 +1,6 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
+import { GraphQLError } from 'graphql';
 import { gql } from 'graphql-tag';
 import { Author } from './models/Authors.js';
 import { Book } from './models/Books.js';
@@ -45,28 +46,38 @@ const resolvers = {
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
     allBooks: async (root, args) => {
-      // no arguments, finds all books
-      if (!args.author && !args.genre) {
-        return await Book.find({}).populate('author');
-      }
+      try {
+        // no arguments, finds all books
+        if (!args.author && !args.genre) {
+          return await Book.find({}).populate('author');
+        }
 
-      // genre is the only arguments
-      if (args.genre && !args.author) {
-        return await Book.find({ genres: { $in: args.genre } }).populate('author');
-      }
+        // genre is the only arguments
+        if (args.genre && !args.author) {
+          return await Book.find({ genres: { $in: args.genre } }).populate('author');
+        }
 
-      // if author is an argument, we need to query the db and filter by author
-      const author = await Author.findOne({ name: args.author });
-      const filteredByAuthor = await Book.find({ author: author._id }).populate('author');
+        // if author is an argument, we need to query the db and filter by author
+        const author = await Author.findOne({ name: args.author });
+        const filteredByAuthor = await Book.find({ author: author._id }).populate('author');
 
-      // if we have genre as argument, also filter by genre, otherwise just return filteredByAuthor
-      if (args.genre && args.author) {
-        const filteredByAuthorAndGenre = filteredByAuthor.filter((book) =>
-          book.genres.includes(args.genre)
-        );
-        return filteredByAuthorAndGenre;
-      } else {
-        return filteredByAuthor;
+        // if we have genre as argument, also filter by genre, otherwise just return filteredByAuthor
+        if (args.genre && args.author) {
+          const filteredByAuthorAndGenre = filteredByAuthor.filter((book) =>
+            book.genres.includes(args.genre)
+          );
+          return filteredByAuthorAndGenre;
+        } else {
+          return filteredByAuthor;
+        }
+      } catch (error) {
+        throw new GraphQLError('Getting books failed', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args,
+            error,
+          },
+        });
       }
     },
     allAuthors: async () => {
@@ -75,19 +86,39 @@ const resolvers = {
   },
   Mutation: {
     addBook: async (root, args) => {
-      let author = await Author.findOne({ name: args.author });
-      if (!author) {
-        author = await new Author({ name: args.author }).save();
+      try {
+        let author = await Author.findOne({ name: args.author });
+        if (!author) {
+          author = await new Author({ name: args.author }).save();
+        }
+        const book = new Book({ ...args, author });
+        await book.save();
+        return book;
+      } catch (error) {
+        throw new GraphQLError('Adding book failed', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args,
+            error,
+          },
+        });
       }
-      const book = new Book({ ...args, author });
-      await book.save();
-      return book;
     },
     editAuthor: async (root, args) => {
-      const author = await Author.findOne({ name: args.name });
-      author.born = args.setBornTo;
-      await author.save();
-      return author;
+      try {
+        const author = await Author.findOne({ name: args.name });
+        author.born = args.setBornTo;
+        await author.save();
+        return author;
+      } catch (error) {
+        throw new GraphQLError('Editing author failed', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args,
+            error,
+          },
+        });
+      }
     },
   },
 };
