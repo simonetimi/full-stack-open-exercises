@@ -5,12 +5,12 @@ const Authors = ({ show, authors, editAuthor }) => {
 
   const onEditAuthor = (event) => {
     event.preventDefault();
-    const name = event.target.name.value;
+    const name = event.target.author.value;
     const setBornTo = Number(event.target.born.value);
 
     editAuthor({ variables: { name, setBornTo } });
 
-    event.target.name.value = '';
+    event.target.author.value = '';
     event.target.born.value = '';
   };
 
@@ -35,8 +35,13 @@ const Authors = ({ show, authors, editAuthor }) => {
       </table>
       <h3>Edit author</h3>
       <form onSubmit={onEditAuthor}>
-        <label htmlFor="name">Author: </label>
-        <input id="name" name="name" type="text" required />
+        <select name="author">
+          {authors.map((author) => (
+            <option key={author.name} value={author.name}>
+              {author.name}
+            </option>
+          ))}
+        </select>
         <label htmlFor="born">Born in: </label>
         <input id="born" name="born" type="number" required min={1} max={2090} />
         <button type="submit">Edit</button>
