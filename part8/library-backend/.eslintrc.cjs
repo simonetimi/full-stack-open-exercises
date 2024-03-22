@@ -1,7 +1,6 @@
 module.exports = {
   env: {
     node: true,
-    commonjs: true,
     es2021: true,
   },
   plugins: [],
@@ -12,13 +11,11 @@ module.exports = {
         node: true,
       },
       files: ['.eslintrc.{js,cjs}'],
-      parserOptions: {
-        sourceType: 'script',
-      },
     },
   ],
   parserOptions: {
     ecmaVersion: 'latest',
+    sourceType: 'module',
   },
   rules: {
     indent: ['error', 2],
