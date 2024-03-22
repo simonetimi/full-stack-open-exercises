@@ -4,6 +4,8 @@ import { GraphQLError } from 'graphql';
 import { gql } from 'graphql-tag';
 import { Author } from './models/Authors.js';
 import { Book } from './models/Books.js';
+import { User } from './models/Users.js';
+import jwt from 'jsonwebtoken';
 import 'dotenv/config';
 
 const typeDefs = gql(`
@@ -12,6 +14,7 @@ const typeDefs = gql(`
     authorCount: Int
     allBooks(author: String, genre: String): [Book]!
     allAuthors: [Author]!
+    me: User
   }
 
   type Book {
@@ -27,9 +30,18 @@ const typeDefs = gql(`
     bookCount: Int!
   }
 
+  type User {
+   username: String!
+   password: String!
+   id: ID!
+}
+
+  type Token {
+    token: String!
+}
   type Mutation {
     addBook(
-      title: String!
+      title: String!    
       published: Int!
       author: String!
       genres: [String!]!
@@ -37,12 +49,23 @@ const typeDefs = gql(`
     editAuthor(
       name: String!
       setBornTo: Int!
-    ): Author
+    ): Author,
+    createUser(
+    username: String!
+    favoriteGenre: String!
+    ): User,
+    login(
+    username: String!
+    password: String!
+    ): Token
   }
 `);
 
 const resolvers = {
   Query: {
+    me: (root, args, { user }) => {
+      return user;
+    },
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
     allBooks: async (root, args) => {
@@ -85,8 +108,15 @@ const resolvers = {
     },
   },
   Mutation: {
-    addBook: async (root, args) => {
+    addBook: async (root, args, { user }) => {
       try {
+        if (!user) {
+          throw new GraphQLError('User not authenticated!', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+            },
+          });
+        }
         let author = await Author.findOne({ name: args.author });
         if (!author) {
           author = await new Author({ name: args.author }).save();
@@ -104,8 +134,15 @@ const resolvers = {
         });
       }
     },
-    editAuthor: async (root, args) => {
+    editAuthor: async (root, args, { user }) => {
       try {
+        if (!user) {
+          throw new GraphQLError('User not authenticated!', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+            },
+          });
+        }
         const author = await Author.findOne({ name: args.name });
         author.born = args.setBornTo;
         await author.save();
@@ -120,6 +157,37 @@ const resolvers = {
         });
       }
     },
+    createUser: async (root, args) => {
+      const user = new User({ ...args });
+
+      return user.save().catch((error) => {
+        throw new GraphQLError('Creating the user failed', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.username,
+            error,
+          },
+        });
+      });
+    },
+    login: async (root, args) => {
+      const user = await User.findOne({ username: args.username });
+
+      if (!user || args.password !== 'secret') {
+        throw new GraphQLError('wrong credentials', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const userForToken = {
+        username: user.username,
+        id: user._id,
+      };
+
+      return { token: jwt.sign(userForToken, process.env.JWT_SECRET) };
+    },
   },
 };
 
@@ -130,6 +198,14 @@ const server = new ApolloServer({
 
 startStandaloneServer(server, {
   listen: { port: 4000 },
+  context: async ({ req }) => {
+    const auth = req ? req.headers.authorization : null;
+    if (auth && auth.startsWith('Bearer ')) {
+      const decodedToken = jwt.verify(auth.substring(7), process.env.JWT_SECRET);
+      const user = await User.findById(decodedToken.id);
+      return { user };
+    }
+  },
 }).then(({ url }) => {
   console.log(`Server ready at ${url}`);
 });
