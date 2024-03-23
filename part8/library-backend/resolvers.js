@@ -9,10 +9,9 @@ const pubsub = new PubSub();
 
 const resolvers = {
   Author: {
-    bookCount: async (author) => {
+    bookCount: (author) => {
       try {
-        const bookCount = await Book.countDocuments({ author: author._id });
-        return bookCount;
+        return author.books.length;
       } catch (error) {
         throw new GraphQLError(`Failed to fetch book count for author ${author.name}`, {
           extensions: {
@@ -65,7 +64,9 @@ const resolvers = {
       }
     },
     allAuthors: async () => {
-      return await Author.find({});
+      const response = await Author.find({});
+      console.log(Author.find);
+      return response;
     },
   },
   Mutation: {
@@ -84,6 +85,8 @@ const resolvers = {
         }
         const book = new Book({ ...args, author });
         await book.save();
+        author.books.push(book);
+        await author.save();
         pubsub.publish('BOOK_ADDED', { bookAdded: book });
         return book;
       } catch (error) {

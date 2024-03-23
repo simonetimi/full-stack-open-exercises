@@ -17,6 +17,7 @@ import mongoose from 'mongoose';
 mongoose.set('strictQuery', false);
 const MONGODB_URI = process.env.MONGODB_URI;
 mongoose.connect(MONGODB_URI);
+mongoose.set('debug', true);
 
 const start = async () => {
   const app = express();
