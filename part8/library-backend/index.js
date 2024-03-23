@@ -15,6 +15,7 @@ const typeDefs = gql(`
     allBooks(author: String, genre: String): [Book]!
     allAuthors: [Author]!
     me: User
+    favoriteGenre: String
   }
 
   type Book {
@@ -33,6 +34,7 @@ const typeDefs = gql(`
   type User {
    username: String!
    password: String!
+   favoriteGenre: String
    id: ID!
 }
 

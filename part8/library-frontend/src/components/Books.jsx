@@ -1,25 +1,23 @@
 import { useEffect } from 'react';
 import { useState } from 'react';
+import { useQuery } from '@apollo/client';
+import { ALL_BOOKS } from '../queries';
 
 const Books = ({ show, books }) => {
+  const [selectedGenre, setSelectedGenre] = useState('');
+  const filteredBooks = useQuery(ALL_BOOKS, {
+    variables: {
+      genre: selectedGenre || '',
+    },
+    fetchPolicy: 'network-only',
+  });
   const [genres, setGenres] = useState([]);
-  const [filteredBooks, setFilteredBooks] = useState([]);
-  const [selectedGenre, setSelectedGenre] = useState('all');
 
   useEffect(() => {
     setGenres([...new Set(books.map((book) => book.genres).flat())]);
-  }, [books, setGenres]);
+  }, [books, filteredBooks, setGenres]);
 
-  useEffect(() => {
-    if (selectedGenre === 'all') {
-      setFilteredBooks(books);
-    } else {
-      const newBookList = books.filter((book) => book.genres.includes(selectedGenre));
-      setFilteredBooks(newBookList);
-    }
-  }, [books, selectedGenre]);
-
-  const onGenreChange = (event) => {
+  const onGenreChange = async (event) => {
     setSelectedGenre(event.target.value);
   };
 
@@ -27,13 +25,14 @@ const Books = ({ show, books }) => {
     return null;
   }
 
+  if (filteredBooks.loading) return <p>Loading...</p>;
+
   return (
     <div>
       <h2>books</h2>
-
       <h3>Genres</h3>
       <select id="genres" value={selectedGenre} onChange={onGenreChange}>
-        <option value="all">All Genres</option>
+        <option value={''}>All Genres</option>
         {genres.map((genre) => (
           <option key={genre} value={genre}>
             {genre}
@@ -48,7 +47,7 @@ const Books = ({ show, books }) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {filteredBooks.map((book) => (
+          {filteredBooks.data.allBooks.map((book) => (
             <tr key={book.title}>
               <td>{book.title}</td>
               <td>{book.author.name}</td>

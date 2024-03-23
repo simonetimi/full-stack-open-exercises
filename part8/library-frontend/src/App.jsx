@@ -68,11 +68,7 @@ const App = () => {
           <Books show={page === 'books'} books={books.data.allBooks} />
           <NewBook show={page === 'add'} addBook={addBook} />
           <Login show={page === 'login'} login={login} setToken={setToken} />
-          <Recommendations
-            show={page === 'recommendations'}
-            books={books.data.allBooks}
-            currentUser={currentUser}
-          />
+          <Recommendations show={page === 'recommendations'} currentUser={currentUser} />
         </main>
       )}
     </div>
