@@ -4,8 +4,8 @@ import Books from './components/Books';
 import NewBook from './components/NewBook';
 import Login from './components/Login';
 import Recommendations from './components/Recommendations';
-import { useMutation, useQuery } from '@apollo/client';
-import { ALL_AUTHORS, ALL_BOOKS, ADD_BOOK, EDIT_AUTHOR, LOGIN, ME } from './queries';
+import { useQuery, useMutation, useSubscription } from '@apollo/client';
+import { ALL_AUTHORS, ALL_BOOKS, ADD_BOOK, EDIT_AUTHOR, LOGIN, ME, BOOK_ADDED } from './queries';
 
 const App = () => {
   const authors = useQuery(ALL_AUTHORS);
@@ -27,6 +27,18 @@ const App = () => {
     },
   });
   const [page, setPage] = useState('authors');
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data, client }) => {
+      const book = data.data.bookAdded;
+      window.alert(`Added book: ${book.title}`);
+      client.cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
+        return {
+          allBooks: allBooks.concat(book),
+        };
+      });
+    },
+  });
 
   useEffect(() => {
     const token = localStorage.getItem('token');

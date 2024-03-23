@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { useQuery } from '@apollo/client';
-import { ALL_BOOKS } from '../queries';
+import { useQuery, useSubscription } from '@apollo/client';
+import { ALL_BOOKS, BOOK_ADDED } from '../queries';
 
 const Books = ({ show, books }) => {
   const [selectedGenre, setSelectedGenre] = useState('');
@@ -9,9 +9,14 @@ const Books = ({ show, books }) => {
     variables: {
       genre: selectedGenre || '',
     },
-    fetchPolicy: 'network-only',
   });
   const [genres, setGenres] = useState([]);
+
+  useSubscription(BOOK_ADDED, {
+    onData: async () => {
+      filteredBooks.refetch();
+    },
+  });
 
   useEffect(() => {
     setGenres([...new Set(books.map((book) => book.genres).flat())]);
