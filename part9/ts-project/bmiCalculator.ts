@@ -1,26 +1,24 @@
-function calculateBmi(height: number, weight: number): string {
+export default function calculateBmi(height: number, weight: number): string {
   if (height === 0 || weight === 0) {
-    return "Values can't be zero!";
+    throw new Error("Values can't be zero!");
   } else if (isNaN(height) || isNaN(weight)) {
-    return 'Provided values were not numbers!';
+    console.log(height);
+    console.log(weight);
+    throw new Error('Provided values were not numbers!');
   }
   const heightInMeters = height / 100;
   const BMI = weight / heightInMeters ** 2;
   if (BMI < 18.5) {
-    return 'Underweight';
+    return `Underweight: BMI is ${BMI}`;
   }
   if (BMI < 25) {
-    return 'Healthy weight';
+    return `Healthy weight: BMI is ${BMI}`;
   }
   if (BMI < 30) {
-    return 'Overweight';
+    return `Overweight: BMI is ${BMI}`;
   }
   if (BMI >= 30) {
-    return 'Obese';
+    return `Obese: BMI is ${BMI}`;
   }
   return 'Not supported';
 }
-
-const height: number = Number(process.argv[2]);
-const weight: number = Number(process.argv[3]);
-console.log(calculateBmi(height, weight));
