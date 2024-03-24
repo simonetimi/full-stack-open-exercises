@@ -7,7 +7,7 @@ interface Results {
   rating: 1 | 2 | 3;
   ratingDescription: string;
 }
-
+/*
 const parseArguments = (args: string[]) => {
   args.splice(0, 2);
   if (args.length !== 8)
@@ -25,8 +25,12 @@ const parseArguments = (args: string[]) => {
     throw new Error('Provided values were not numbers!');
   }
 };
+*/
 
-function calculateExercises(trainingData: number[], dailyTarget: number): Results {
+export default function calculateExercises(trainingData: number[], dailyTarget: number): Results {
+  if (trainingData.length < 7) {
+    throw new Error('Daily data is missing!');
+  }
   const trainingDays = trainingData.filter((day) => day > 0);
   const average = trainingDays.reduce((acc, current) => acc + current, 0) / trainingDays.length;
 
@@ -50,7 +54,3 @@ function calculateExercises(trainingData: number[], dailyTarget: number): Result
     ratingDescription,
   };
 }
-
-const parsedArguments = parseArguments(process.argv);
-
-console.log(calculateExercises(parsedArguments.trainingData, parsedArguments.dailyTarget));
