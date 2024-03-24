@@ -4,3 +4,4 @@
 
 - ts-project 9.1 - 9.7
 - patientor-backend 9.8 - 9.13
+- vite-ts 9.14 - 9.19
