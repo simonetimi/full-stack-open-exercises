@@ -18,6 +18,7 @@ function calculateBmi(height: number, weight: number): string {
   if (BMI >= 30) {
     return 'Obese';
   }
+  return 'Not supported';
 }
 
 const height: number = Number(process.argv[2]);

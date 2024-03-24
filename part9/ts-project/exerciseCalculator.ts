@@ -16,7 +16,7 @@ const parseArguments = (args: string[]) => {
     );
   const realNumArgs = args.map((arg) => Number(arg)).filter((arg) => !isNaN(arg));
   if (realNumArgs.length === 8) {
-    const dailyTarget = realNumArgs.pop();
+    const dailyTarget = realNumArgs.pop() as number;
     return {
       trainingData: realNumArgs,
       dailyTarget,
