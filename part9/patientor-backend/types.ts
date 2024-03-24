@@ -9,14 +9,16 @@ export interface Patient {
   name: string;
   dateOfBirth: string;
   ssn: string;
-  gender: string;
+  gender: Gender;
   occupation: string;
 }
 
-export interface AddedPatient {
-  name: string;
-  dateOfBirth: string;
-  ssn: string;
-  gender: string;
-  occupation: string;
+export enum Gender {
+  Male = 'male',
+  Female = 'female',
+  Other = 'other',
 }
+
+export type AddedPatient = Omit<Patient, 'id'>;
+
+export type PublicPatient = Omit<Patient, 'ssn'>;
