@@ -6,3 +6,4 @@
 - patientor-backend 9.8 - 9.13
 - vite-ts 9.14 - 9.15
 - flight-diary-frontend 9.16 - 9.19
+- patientor-frontend and patientor-backend 9.20-9.29
