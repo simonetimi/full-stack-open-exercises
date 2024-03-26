@@ -17,6 +17,13 @@ router.get('/', function (_req, res) {
   res.status(200).json(safePatients);
 });
 
+router.get('/:id', function (req, res) {
+  const id = req.params.id;
+  const safePatients: PublicPatient[] = makePublic(patientsInMemory);
+  const safePatient = safePatients.find((patient) => patient.id === id);
+  res.status(200).json(safePatient);
+});
+
 router.post('/', function (req, res) {
   const data = checkPatient(req.body);
   const newPatient = { ...data, id: uuid() };

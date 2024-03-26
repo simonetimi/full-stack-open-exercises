@@ -24,6 +24,18 @@ const parseGender = (gender: unknown): Gender => {
   return gender;
 };
 
+const isArrayofStrings = (array: unknown): array is string[] => {
+  if (!Array.isArray(array)) return false;
+  return array.every((item) => typeof item === 'string');
+};
+
+const parseArrayofStrings = (array: unknown): string[] => {
+  if (!isArrayofStrings(array)) {
+    throw new Error('Incorrect or missing array of strings');
+  }
+  return array;
+};
+
 export function checkPatient(data: unknown): AddedPatient {
   if (!data || typeof data !== 'object') {
     throw new Error('Incorrect or missing data');
@@ -33,7 +45,8 @@ export function checkPatient(data: unknown): AddedPatient {
     'dateOfBirth' in data &&
     'ssn' in data &&
     'gender' in data &&
-    'occupation' in data
+    'occupation' in data &&
+    'entries' in data
   ) {
     const newPatient: AddedPatient = {
       name: parseString(data.name),
@@ -41,6 +54,7 @@ export function checkPatient(data: unknown): AddedPatient {
       ssn: parseString(data.ssn),
       gender: parseGender(data.gender),
       occupation: parseString(data.occupation),
+      entries: parseArrayofStrings(data.entries),
     };
     return newPatient;
   }
