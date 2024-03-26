@@ -1,4 +1,11 @@
-import { Gender, AddedPatient } from './types';
+import {
+  Gender,
+  AddedPatient,
+  Entry,
+  HospitalEntry,
+  HealthCheckEntry,
+  OccupationalHealthcareEntry,
+} from './types';
 
 const isString = (text: unknown): text is string => {
   return typeof text === 'string' || text instanceof String;
@@ -24,14 +31,48 @@ const parseGender = (gender: unknown): Gender => {
   return gender;
 };
 
-const isArrayofStrings = (array: unknown): array is string[] => {
+const isArrayofEntries = (array: unknown): array is Entry[] => {
   if (!Array.isArray(array)) return false;
-  return array.every((item) => typeof item === 'string');
+  return array.every((item) => isEntry(item));
 };
 
-const parseArrayofStrings = (array: unknown): string[] => {
-  if (!isArrayofStrings(array)) {
-    throw new Error('Incorrect or missing array of strings');
+const isEntry = (entry: unknown): entry is Entry => {
+  return (
+    isHealthCheckEntry(entry) ||
+    isHospitalEntry(entry) ||
+    isOccupationalHealthcareEntry(entry)
+  );
+};
+
+const isHealthCheckEntry = (entry: unknown): entry is HealthCheckEntry => {
+  return (
+    typeof entry === 'object' &&
+    entry !== null &&
+    (entry as HealthCheckEntry).type === 'HealthCheck'
+  );
+};
+
+const isHospitalEntry = (entry: unknown): entry is HospitalEntry => {
+  return (
+    typeof entry === 'object' &&
+    entry !== null &&
+    (entry as HospitalEntry).type === 'Hospital'
+  );
+};
+
+const isOccupationalHealthcareEntry = (
+  entry: unknown,
+): entry is OccupationalHealthcareEntry => {
+  return (
+    typeof entry === 'object' &&
+    entry !== null &&
+    (entry as OccupationalHealthcareEntry).type === 'OccupationalHealthcare'
+  );
+};
+
+const parseArrayofEntries = (array: unknown): Entry[] => {
+  if (!isArrayofEntries(array)) {
+    throw new Error('Incorrect or missing array of entries');
   }
   return array;
 };
@@ -54,7 +95,7 @@ export function checkPatient(data: unknown): AddedPatient {
       ssn: parseString(data.ssn),
       gender: parseGender(data.gender),
       occupation: parseString(data.occupation),
-      entries: parseArrayofStrings(data.entries),
+      entries: parseArrayofEntries(data.entries),
     };
     return newPatient;
   }
