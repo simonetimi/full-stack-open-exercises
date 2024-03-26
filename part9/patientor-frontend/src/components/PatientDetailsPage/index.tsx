@@ -2,9 +2,9 @@ import { Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import patients from '../../services/patients';
-import type { Patient } from '../../types';
+import type { Diagnosis, Patient } from '../../types';
 
-const PatientDetailPage = () => {
+const PatientDetailPage = ({ diagnoses }: { diagnoses: Diagnosis[] }) => {
   const { id } = useParams();
   const [patient, setPatient] = useState<Patient>();
 
@@ -20,7 +20,6 @@ const PatientDetailPage = () => {
   if (!patient) {
     return (
       <div>
-        {' '}
         <Typography align="center" variant="h6" marginBottom={'40px'}>
           Patient Details
         </Typography>
@@ -45,7 +44,7 @@ const PatientDetailPage = () => {
         Date of birth: {patient.dateOfBirth}
       </Typography>
       <Typography variant="body2">Occupation: {patient.occupation}</Typography>
-      {patient.entries.length > 1 ? (
+      {patient.entries.length > 0 ? (
         <>
           <Typography variant="h6" marginTop={'40px'}>
             Entries:
@@ -60,9 +59,16 @@ const PatientDetailPage = () => {
                     <Typography variant="body1" marginTop={'20px'}>
                       Codes:
                     </Typography>
-                    <Typography variant="body2">
-                      {entry.diagnosisCodes.map((code) => code)}
-                    </Typography>
+                    {entry.diagnosisCodes.map((code) => (
+                      <Typography variant="body2">
+                        {code}:{' '}
+                        {diagnoses.map((diagnosis) => {
+                          if (diagnosis.code === code) {
+                            return diagnosis.name;
+                          }
+                        })}
+                      </Typography>
+                    ))}
                   </>
                 ) : null}
               </div>
