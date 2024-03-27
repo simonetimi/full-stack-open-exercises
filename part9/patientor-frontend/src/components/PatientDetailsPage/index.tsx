@@ -1,3 +1,4 @@
+import Entries from './Entries';
 import { Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -32,7 +33,7 @@ const PatientDetailPage = ({ diagnoses }: { diagnoses: Diagnosis[] }) => {
 
   return (
     <div>
-      <Typography align="center" variant="h6" marginBottom={'40px'}>
+      <Typography variant="h6" marginBottom={'20px'} marginTop={'40px'}>
         Patient Details
       </Typography>
       <Typography variant="body1" marginBottom={'40px'}>
@@ -45,36 +46,7 @@ const PatientDetailPage = ({ diagnoses }: { diagnoses: Diagnosis[] }) => {
       </Typography>
       <Typography variant="body2">Occupation: {patient.occupation}</Typography>
       {patient.entries.length > 0 ? (
-        <>
-          <Typography variant="h6" marginTop={'40px'}>
-            Entries:
-          </Typography>
-          {patient.entries.map((entry) => {
-            return (
-              <div>
-                <Typography variant="body2">Date: {entry.date}</Typography>
-                <Typography variant="body2">{entry.description}</Typography>
-                {entry.diagnosisCodes ? (
-                  <>
-                    <Typography variant="body1" marginTop={'20px'}>
-                      Codes:
-                    </Typography>
-                    {entry.diagnosisCodes.map((code) => (
-                      <Typography variant="body2">
-                        {code}:{' '}
-                        {diagnoses.map((diagnosis) => {
-                          if (diagnosis.code === code) {
-                            return diagnosis.name;
-                          }
-                        })}
-                      </Typography>
-                    ))}
-                  </>
-                ) : null}
-              </div>
-            );
-          })}
-        </>
+        <Entries entries={patient.entries} diagnoses={diagnoses} />
       ) : null}
     </div>
   );
