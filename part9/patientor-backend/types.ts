@@ -61,6 +61,11 @@ export interface OccupationalHealthcareEntry extends BaseEntry {
   };
 }
 
+export interface SickLeave {
+  startDate: string;
+  endDate: string;
+}
+
 export type Entry =
   | HospitalEntry
   | OccupationalHealthcareEntry
